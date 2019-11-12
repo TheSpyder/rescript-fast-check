@@ -1,0 +1,19 @@
+{
+  "name": "bs-fast-check",
+  "version": "1.0.0",
+  "refmt": 3,
+  "namespace": true,
+  "sources": [{
+    "dir": "src",
+    "subdir": true
+  }, {
+    "dir": "test",
+    "type": "dev"
+  }],
+  "suffix": ".bs.js",
+  "bs-dev-dependencies": ["bs-mocha"],
+  "warnings": {
+    "number": "A-4-41-42-43+101-102",
+    "error": false // set to true for production builds
+  }
+}

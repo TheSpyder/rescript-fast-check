@@ -1,0 +1,30 @@
+{
+  "name": "bs-fast-check",
+  "version": "0.10.0",
+  "description": "Fast-check bindings for bucklescript",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/TheSpyder/bs-fast-check.git"
+  },
+  "homepage": "https://github.com/TheSpyder/bs-fast-check",
+  "bugs": "https://github.com/TheSpyder/bs-fast-check/issues",
+  "scripts": {
+    "clean": "bsb -clean-world",
+    "build": "bsb -make-world",
+    "watch": "bsb -make-world -w",
+    "test": "./node_modules/.bin/mocha lib/js/test/Test*.js"
+  },
+  "keywords": [
+    "BuckleScript",
+    "reason"
+  ],
+  "author": "Andrew Herron",
+  "license": "BSD-3-Clause",
+  "devDependencies": {
+    "bs-mocha": "^1.0.0",
+    "bs-platform": "^5.2.1"
+  },
+  "dependencies": {
+    "fast-check": "^1.18.1"
+  }
+}
