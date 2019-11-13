@@ -27,3 +27,4 @@ lib/bs
 .bsb.lock
 node_modules
 lib
+*.bs.js

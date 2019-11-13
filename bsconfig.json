@@ -11,6 +11,12 @@
   }],
   "suffix": ".bs.js",
   "bs-dev-dependencies": ["bs-mocha"],
+  "package-specs": [
+    {
+      "module": "commonjs",
+      "in-source": true
+    }
+  ],
   "warnings": {
     "number": "A-4-41-42-43+101-102",
     "error": false // set to true for production builds
