@@ -11,6 +11,9 @@ $ npm install bs-fast-check
 In `bsconfig.json`:
 ```
   "bs-dev-dependencies": [
-    "bs-fast-check"
+    "bs-jsverify"
   ],
 ```
+
+## Credits
+Some API inspiration taken from [bs-jsverify](https://github.com/Risto-Stevcev/bs-jsverify) for ease of migration from `bs-jsverify`

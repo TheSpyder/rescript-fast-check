@@ -35,23 +35,117 @@ external sample: (~arb: arbitrary('a), ~genSize: int=?, unit) => array('a) =
   "sample";
 
 module Combinators = {
-  // methods on fast-check itself
-  [@bs.module "fast-check"]
-  external array: arbitrary('a) => arbitrary(array('a)) = "array";
-  [@bs.module "fast-check"]
-  external constant: 'a => arbitrary('a) = "constant";
-  [@bs.module "fast-check"] [@bs.variadic]
-  external constantFrom: array('a) => arbitrary('a) = "constantFrom";
-  [@bs.module "fast-check"] [@bs.variadic]
-  external oneOf: array(arbitrary('a)) => arbitrary('a) = "oneOf";
-
-
-  // methods on the arbitraries
+  // methods on the arbitrary instances
   [@bs.send]
   external chain: (arbitrary('a), 'a => arbitrary('b)) => arbitrary('b) =
     "chain";
   [@bs.send]
   external map: (arbitrary('a), 'a => 'b) => arbitrary('b) = "map";
+  [@bs.send]
+  external filter: (arbitrary('a), 'a => bool) => arbitrary('a) = "filter";
+  [@bs.send] external noShrink: arbitrary('a) => arbitrary('a) = "noShrink";
+  [@bs.send] external noBias: arbitrary('a) => arbitrary('a) = "noBias";
+
+  // methods on fast-check itself
+  [@bs.module "fast-check"]
+  external constant: 'a => arbitrary('a) = "constant";
+  [@bs.module "fast-check"] [@bs.variadic]
+  external constantFrom: array('a) => arbitrary('a) = "constantFrom";
+  // fc.clonedConstant - unsure about this - what's fc.cloneMethod?
+  [@bs.module "fast-check"] [@bs.variadic]
+  external mapToConstant:
+    array({
+      ..
+      "num": int,
+      "build": int => 'a,
+    }) =>
+    arbitrary('a) =
+    "mapToConstant";
+  [@bs.module "fast-check"] [@bs.variadic]
+  external oneOf: array(arbitrary('a)) => arbitrary('a) = "oneof";
+  // fc.frequency - how do we distinguish WeightedArbitrary in the type system?
+  // fc.option - renamed, see below
+  [@bs.module "fast-check"]
+  external subArray: array('a) => arbitrary(array('a)) = "subarray";
+  [@bs.module "fast-check"]
+  external subArrayWithLength: (array('a), int, int) => arbitrary(array('a)) =
+    "subarray";
+  [@bs.module "fast-check"]
+  external shuffledSubArray: array('a) => arbitrary(array('a)) =
+    "shuffledSubarray";
+  [@bs.module "fast-check"]
+  external shuffledSubArrayWithLength:
+    (array('a), int, int) => arbitrary(array('a)) =
+    "shuffledSubarray";
+  [@bs.module "fast-check"]
+  external array: arbitrary('a) => arbitrary(array('a)) = "array";
+  [@bs.module "fast-check"]
+  external arrayWithLength:
+    (arbitrary('a), int, int) => arbitrary(array('a)) =
+    "array";
+  [@bs.module "fast-check"]
+  external set: arbitrary('a) => arbitrary(array('a)) = "set";
+  [@bs.module "fast-check"]
+  external setWithLength:
+    (arbitrary('a), int, int, ~comparator: ('a, 'a) => bool) =>
+    arbitrary(array('a)) =
+    "set";
+
+  // slightly tweaked because tuples are arrays
+  // and limited to 5 because I don't feel like doing any more
+  [@bs.module "fast-check"]
+  external tuple2: (arbitrary('a), arbitrary('b)) => arbitrary(('a, 'b)) =
+    "tuple";
+  [@bs.module "fast-check"]
+  external tuple3:
+    (arbitrary('a), arbitrary('b), arbitrary('c)) =>
+    arbitrary(('a, 'b, 'c)) =
+    "tuple";
+  [@bs.module "fast-check"]
+  external tuple4:
+    (arbitrary('a), arbitrary('b), arbitrary('c), arbitrary('d)) =>
+    arbitrary(('a, 'b, 'c, 'd)) =
+    "tuple";
+  [@bs.module "fast-check"]
+  external tuple5:
+    (
+      arbitrary('a),
+      arbitrary('b),
+      arbitrary('c),
+      arbitrary('d),
+      arbitrary('e)
+    ) =>
+    arbitrary(('a, 'b, 'c, 'd, 'e)) =
+    "tuple";
+
+  [@bs.module "fast-check"]
+  external dictionary:
+    (arbitrary(string), arbitrary('a)) => arbitrary(Js.Dict.t('a)) =
+    "record";
+  [@bs.module "fast-check"]
+  external record:
+    (Js.Dict.t(arbitrary('a)), {. "withDeletedKeys": bool}) =>
+    arbitrary(Js.Dict.t('a)) =
+    "record";
+  // shadow for ease of use
+  let record = (arb, ~withDeletedKeys) =>
+    record(arb, {"withDeletedKeys": withDeletedKeys});
+  /** generates "tuples" but we can't really express that in the type system */
+  [@bs.module "fast-check"]
+  external dedup: (arbitrary('a), int) => arbitrary(array('a)) = "dedup";
+
+  // custom and renamed combinators
+  [@bs.module "fast-check"]
+  external null: arbitrary('a) => arbitrary(Js.null('a)) = "option";
+  /**
+   * In fast-check `option` means null. In these bindings, that has been renamed to `null`
+   * and this function returns an option.
+   */
+  let option: arbitrary('a) => arbitrary(option('a)) =
+    arb => null(arb)->map(Js.Null.toOption);
+
+  let list: arbitrary('a) => arbitrary(list('a)) =
+    a => map(array(a), Array.to_list);
 };
 
 [@bs.module "fast-check"]
@@ -91,32 +185,36 @@ external fullUnicode: unit => arbitrary(string) = "fullUnicode";
 [@bs.module "fast-check"]
 external hexaString: unit => arbitrary(string) = "hexaString";
 [@bs.module "fast-check"]
-external hexaStringRange: (int, int) => arbitrary(string) = "hexaString";
+external hexaStringWithLength: (int, int) => arbitrary(string) = "hexaString";
 [@bs.module "fast-check"]
 external base64String: unit => arbitrary(string) = "base64String";
 [@bs.module "fast-check"]
-external base64StringRange: (int, int) => arbitrary(string) = "base64String";
+external base64StringWithLength: (int, int) => arbitrary(string) =
+  "base64String";
 [@bs.module "fast-check"]
 external string: unit => arbitrary(string) = "string";
 [@bs.module "fast-check"]
-external stringRange: (int, int) => arbitrary(string) = "string";
+external stringWithLength: (int, int) => arbitrary(string) = "string";
 [@bs.module "fast-check"]
 external asciiString: unit => arbitrary(string) = "asciiString";
 [@bs.module "fast-check"]
-external asciiStringRange: (int, int) => arbitrary(string) = "asciiString";
+external asciiStringWithLength: (int, int) => arbitrary(string) =
+  "asciiString";
 [@bs.module "fast-check"]
-external string16Bits: unit => arbitrary(string) = "string16Bits";
+external string16Bits: unit => arbitrary(string) = "string16bits";
 [@bs.module "fast-check"]
-external string16BitsRange: (int, int) => arbitrary(string) = "string16Bits";
+external string16BitsWithLength: (int, int) => arbitrary(string) =
+  "string16bits";
 [@bs.module "fast-check"]
 external fullUnicodeString: unit => arbitrary(string) = "fullUnicodeString";
 [@bs.module "fast-check"]
-external fullUnicodeStringRange: (int, int) => arbitrary(string) =
+external fullUnicodeStringWithLength: (int, int) => arbitrary(string) =
   "fullUnicodeString";
 [@bs.module "fast-check"]
 external stringOf: arbitrary(string) => arbitrary(string) = "stringOf";
 [@bs.module "fast-check"]
-external stringOfRange: (arbitrary(string), int, int) => arbitrary(string) =
+external stringOfWithLength:
+  (arbitrary(string), int, int) => arbitrary(string) =
   "stringOf";
 
 [@bs.module "fast-check"]
@@ -131,161 +229,9 @@ external dateRange:
   arbitrary(Js.Date.t) =
   "date";
 
-let arbList: arbitrary('a) => arbitrary(list('a)) =
-  a => Combinators.(map(array(a), Array.to_list));
-// let arbList: arbitrary('a) => arbitrary(list('a)) =
-//   a =>
-//     chain(
-//       Array.to_list,
-//       Array.of_list,
-//       ~newShow=
-//         l =>
-//           Js.Json.stringifyAny(Array.of_list(l))
-//           |> Js.Option.getWithDefault(""),
-//       array(a),
-//     );
-
 /* * * * * * * *
  * For objects *
  * * * * * * * */
 [@bs.module "jsverify"] external arbObject: arbitrary(Js.t('a)) = "object";
 
 [@bs.module "jsverify"] external arbJSON: arbitrary(Js.Json.t) = "json";
-
-[@bs.module "jsverify"]
-external arbDict: arbitrary('a) => arbitrary(Js.Dict.t('a)) = "dict";
-
-/* * * * * *
- * Helpers *
- * * * * * */
-[@bs.module "fast-check"]
-external arbConstant: 'a => arbitrary('a) = "constant";
-
-[@bs.send] external noShrink: arbitrary('a) => arbitrary('a) = "noShrink";
-
-/*
- /* * * * * * * *
-  * Combinators *
-  * * * * * * * */
- // [@bs.module "jsverify"]
- // external small: arbitrary('a) => arbitrary('a) = "small";
-
- // [@bs.module "jsverify"]
- // external such_that: (arbitrary('a), 'a => bool) => arbitrary('a) =
- //   "suchthat";
-
- // [@bs.module "jsverify"]
- // external elements: array('a) => arbitrary('a) = "elements";
-
- // [@bs.module "jsverify"]
- // external one_of: array(arbitrary('a)) => arbitrary('a) = "oneof";
-
- // [@bs.module "jsverify"]
- // external fn: arbitrary('a) => arbitrary('b => 'a) = "asciinestring";
-
- // [@bs.module "jsverify"]
- // external tuple: ((arbitrary('a), arbitrary('b))) => arbitrary(('a, 'b)) =
- //   "tuple";
-
- // [@bs.module "jsverify"]
- // external tuple':
- //   ((arbitrary('a), arbitrary('b), arbitrary('c))) =>
- //   arbitrary(('a, 'b, 'c)) =
- //   "tuple";
-
- // [@bs.module "jsverify"]
- // external tuple'':
- //   ((arbitrary('a), arbitrary('b), arbitrary('c), arbitrary('d))) =>
- //   arbitrary(('a, 'b, 'c, 'd)) =
- //   "tuple";
-
- // [@bs.module "jsverify"]
- // external unsafe_record:
- //   (
- //     [@bs.ignore]
- //     Types.proxy(Js.t('a)) /* set the record type as key: value */,
- //     Js.t('b)
- //   ) => /* set the record type as key: arbitrary(value) */
- //   arbitrary(Js.t('a)) =
- //   "record";
-
- /* Combines several arbitraries (as an untagged union)
-  * This is represented as an abstract type `sum('a)`. You'll need to use reflection in
-  * order to get the value out (see the `Js.Types` module)
-  */
- // [@bs.module "jsverify"]
- // external sum:
- //   ((arbitrary('a), arbitrary('b))) => arbitrary(sum(('a, 'b))) =
- //   "oneof";
- // [@bs.module "jsverify"]
- // external sum':
- //   ((arbitrary('a), arbitrary('b), arbitrary('c))) =>
- //   arbitrary(sum(('a, 'b, 'c))) =
- //   "oneof";
- // [@bs.module "jsverify"]
- // external sum'':
- //   ((arbitrary('a), arbitrary('b), arbitrary('c), arbitrary('d))) =>
- //   arbitrary(sum(('a, 'b, 'c, 'd))) =
- //   "oneof";
-
- // let null: arbitrary('a) => arbitrary(Js.null('a)) =
- //   arb => {
- //     let null: Js.null('a) = Js.null;
- //     Obj.magic(sum((arb, arbConstant(null))));
- //   };
-
- // let nullable: arbitrary('a) => arbitrary(Js.nullable('a)) =
- //   arb => {
- //     let null: Js.nullable('a) = Js.Nullable.null;
- //     let undefined: Js.nullable('a) = Js.Nullable.undefined;
- //     Obj.magic(sum'((arb, arbConstant(null), arbConstant(undefined))));
- //   };
-
- // let option: arbitrary('a) => arbitrary(option('a)) =
- //   arb =>
- //     smap(
- //       Js.Null.toOption,
- //       Js.Null.fromOption,
- //       ~newShow=
- //         a =>
- //           switch (a) {
- //           | Some(a') =>
- //             "Some("
- //             ++ (Js.Json.stringifyAny(a') |> Js.Option.getWithDefault(""))
- //             ++ ")"
- //           | None => "None"
- //           },
- //       null(arb),
- //     );
-
- // let either:
- //   (arbitrary('a), arbitrary('b)) => arbitrary(Types.either('a, 'b)) =
- //   (a, b) =>
- //     smap(
- //       r => {
- //         let is_left: sum(({. "left": 'a}, {. "right": 'b})) => bool = [%bs.raw
- //           {|
- //             function(r) { return r.left !== undefined ? 1 : 0 }
- //           |}
- //         ];
- //         is_left(r)
- //           ? Types.Left(Obj.magic(r)##left)
- //           : Types.Right(Obj.magic(r)##right);
- //       },
- //       e =>
- //         switch (e) {
- //         | Types.Left(l) => Obj.magic({"left": l})
- //         | Types.Right(r) => Obj.magic({"right": r})
- //         },
- //       ~newShow=
- //         e =>
- //           switch (e) {
- //           | Left(l') =>
- //             "Left("
- //             ++ (Js.Json.stringifyAny(l') |> Js.Option.getWithDefault(""))
- //             ++ ")"
- //           | Right(r') =>
- //             "Right("
- //             ++ (Js.Json.stringifyAny(r') |> Js.Option.getWithDefault(""))
- //             ++ ")"
- */

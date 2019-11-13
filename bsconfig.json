@@ -4,8 +4,7 @@
   "refmt": 3,
   "namespace": true,
   "sources": [{
-    "dir": "src",
-    "subdir": true
+    "dir": "src"
   }, {
     "dir": "test",
     "type": "dev"
