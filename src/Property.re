@@ -30,7 +30,7 @@ module Parameters = {
   [@bs.deriving {abstract: light}]
   type t('a) = {
     [@bs.optional]
-    endOnFailure: string,
+    endOnFailure: bool,
     [@bs.optional]
     examples: array('a),
     [@bs.optional]
@@ -51,13 +51,10 @@ module Parameters = {
     [@bs.optional]
     timeout: int,
     [@bs.optional]
-    unbiased: int,
+    unbiased: bool,
     [@bs.optional]
     verbose: bool // todo this blocks VeryVerbose
   };
-
-  // bs.deriving creates a `t` function with all properties as named arguments
-  let make = t;
 };
 
 // Convenience for those who don't like calling `assert_`
