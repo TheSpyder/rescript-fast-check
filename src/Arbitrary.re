@@ -162,8 +162,7 @@ external maxSafeInteger: unit => arbitrary(int) = "maxSafeInteger";
 [@bs.module "fast-check"]
 external maxSafeNat: unit => arbitrary(int) = "maxSafeNat";
 
-// `float` would shadow the pervasives module. What should we call it?
-// [@bs.module "fast-check"] external float: unit => arbitrary(float) = "float";
+[@bs.module "fast-check"] external float_: unit => arbitrary(float) = "float";
 [@bs.module "fast-check"]
 external floatRange: (float, float) => arbitrary(float) = "float";
 
@@ -228,6 +227,43 @@ external dateRange:
   } =>
   arbitrary(Js.Date.t) =
   "date";
+
+module Objects = {
+  // There's no way to express this, so we cheat
+  type any;
+  /** This is totally unsafe, but objects are the one point where fast-check generates hetrogeneous types */
+  external anyArb: arbitrary('a) => arbitrary(any) = "%identity";
+
+  [@bs.deriving {abstract: light}]
+  type settings = {
+    [@bs.optional]
+    maxDepth: int,
+    [@bs.optional]
+    maxKeys: int,
+    [@bs.optional]
+    key: arbitrary(string),
+    [@bs.optional]
+    values: array(arbitrary(any)),
+    [@bs.optional]
+    withBoxedValues: bool,
+    [@bs.optional]
+    withMap: bool,
+    [@bs.optional]
+    withSet: bool,
+    [@bs.optional]
+    withObjectString: bool
+  };
+  [@bs.module "fast-check"]
+  external anything: (~settings: settings=?, unit) => arbitrary(any) = "anything";
+  [@bs.module "fast-check"]
+  external object_: (~settings: settings=?, unit) => arbitrary(Js.Dict.t(any)) = "object";
+  [@bs.module "fast-check"]
+  external jsonObject: (int) => arbitrary(Js.Dict.t(Js.Json.t)) = "jsonObject";
+  [@bs.module "fast-check"]
+  external unicodeJsonObject: (int) => arbitrary(Js.Dict.t(Js.Json.t)) = "unicodeJsonObject";
+};
+
+
 
 /* * * * * * * *
  * For objects *

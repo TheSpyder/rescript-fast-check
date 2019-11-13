@@ -21,8 +21,7 @@ describe("primitive built-in arbitraries", () => {
     FcAssert.sync(property1(maxSafeNat(), eq));
   });
   it("float", () => {
-    // float needs a name that doesn't conflict with Pervasives
-    // FcAssert.sync(property1(float(), id));
+    FcAssert.sync(property1(float_(), eq));
     FcAssert.sync(property1(floatRange(0., 5.), eq));
     FcAssert.sync(property1(floatRange(0., 10.), eq));
   });
@@ -38,6 +37,7 @@ describe("primitive built-in arbitraries", () => {
     FcAssert.sync(property1(ascii(), eq));
     FcAssert.sync(property1(fullUnicode(), eq));
   });
+
   it("string", () => {
     FcAssert.sync(property1(hexaString(), eq));
     FcAssert.sync(property1(hexaStringWithLength(0, 5), eq));
@@ -147,4 +147,16 @@ describe("ReasonML specific combinators", () => {
     FcAssert.sync(property1(option(hexa()), eq));
     FcAssert.sync(property1(option(integer()), eq));
   });
+});
+
+describe("complex built-in arbitraries", () => {
+  let constTrue = (_) => true; // because `NaN === NaN` returns false
+  it("object", () => {
+    FcAssert.sync(property1(Objects.anything(), constTrue));
+    FcAssert.sync(property1(Objects.anything(~settings=Objects.settings(~maxDepth=5, ()), ()), constTrue));
+    FcAssert.sync(property1(Objects.object_(), constTrue));
+    FcAssert.sync(property1(Objects.object_(~settings=Objects.settings(~maxDepth=5, ()), ()), constTrue));
+    FcAssert.sync(property1(Objects.jsonObject(5), eq));
+    FcAssert.sync(property1(Objects.unicodeJsonObject(5), eq));
+  })
 });
