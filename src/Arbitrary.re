@@ -30,10 +30,6 @@ module Types = {
       };
 };
 
-[@bs.module "fast-check"]
-external sample: (~arb: arbitrary('a), ~genSize: int=?, unit) => array('a) =
-  "sample";
-
 module Combinators = {
   // methods on the arbitrary instances
   [@bs.send]
@@ -215,6 +211,8 @@ external stringOf: arbitrary(string) => arbitrary(string) = "stringOf";
 external stringOfWithLength:
   (arbitrary(string), int, int) => arbitrary(string) =
   "stringOf";
+
+// TODO More specific strings: json, lorem, etc etc
 
 [@bs.module "fast-check"]
 external date: unit => arbitrary(Js.Date.t) = "date";

@@ -3,6 +3,21 @@ type arbitrary('a) = Arbitrary.arbitrary('a);
 type property('a);
 type asyncProperty('a);
 
+/* TODO not well documented:
+TIPS 1:
+
+The output of property and asyncProperty (respectively Property and AsyncProperty) accepts optional beforeEach and afterEach hooks that would be invoked before and after the execution of the predicate.
+
+property(arb1, predicate)
+    .beforeEach(() => { /* code executed before each call to predicate */ })
+    .afterEach(() => { /* code executed after each call to predicate */ });
+
+asyncProperty(arb1, predicate)
+    .beforeEach(async () => { /* code executed before each call to predicate */ })
+    .afterEach(async () => { /* code executed after each call to predicate */ });
+
+*/
+
 // using types to hide the fact that the same object is returned in all cases
 type fcRunDetails('a);
 type runDetails('a) =
