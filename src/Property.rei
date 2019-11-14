@@ -149,7 +149,8 @@ module Async: {
     (asyncProperty('a), Parameters.t('a)) => Js.Promise.t(unit) =
     "assert";
   [@bs.module "fast-check"]
-  external check: asyncProperty('a) => Js.Promise.t(fcRunDetails('a)) = "check";
+  external check: asyncProperty('a) => Js.Promise.t(fcRunDetails('a)) =
+    "check";
   [@bs.module "fast-check"]
   external checkParams:
     (asyncProperty('a), Parameters.t('a)) => Js.Promise.t(fcRunDetails('a)) =

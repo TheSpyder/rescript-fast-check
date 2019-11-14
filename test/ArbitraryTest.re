@@ -132,7 +132,9 @@ describe("combinators", () => {
     Js.Dict.set(recordGenerator, "a", hexaString());
     Js.Dict.set(recordGenerator, "b", hexaString());
     Js.Dict.set(recordGenerator, "c", hexaString());
-    FcAssert.sync(property1(record(recordGenerator, ~withDeletedKeys=true), eq));
+    FcAssert.sync(
+      property1(record(recordGenerator, ~withDeletedKeys=true), eq),
+    );
     FcAssert.sync(property1(dedup(hexa(), 5), eq));
   });
 });
@@ -150,26 +152,50 @@ describe("ReasonML specific combinators", () => {
 });
 
 describe("complex built-in arbitraries", () => {
-  let constTrue = (_) => true; // because `NaN === NaN` returns false
+  let constTrue = _ => true; // because `NaN === NaN` returns false
   it("object", () => {
     FcAssert.sync(property1(Objects.anything(), constTrue));
-    FcAssert.sync(property1(Objects.anything(~settings=Objects.settings(~maxDepth=5, ()), ()), constTrue));
+    FcAssert.sync(
+      property1(
+        Objects.anything(~settings=Objects.settings(~maxDepth=5, ()), ()),
+        constTrue,
+      ),
+    );
     FcAssert.sync(property1(Objects.object_(), constTrue));
-    FcAssert.sync(property1(Objects.object_(~settings=Objects.settings(~maxDepth=5, ()), ()), constTrue));
+    FcAssert.sync(
+      property1(
+        Objects.object_(~settings=Objects.settings(~maxDepth=5, ()), ()),
+        constTrue,
+      ),
+    );
     FcAssert.sync(property1(Objects.jsonObject(5), eq));
     FcAssert.sync(property1(Objects.unicodeJsonObject(5), eq));
   });
 
   it("letrec", () => {
     // example from the docs
-    let recursive = Objects.letrec((tie) => {
-      let types = Js.Dict.empty();
-      Js.Dict.set(types, "tree", Combinators.oneOf([|tie(."node"), tie(."tree"), tie(."leaf")|])->Objects.anyArb);
-      Js.Dict.set(types, "node", Combinators.tuple2(tie(."tree"), tie(."tree"))->Objects.anyArb);
-      Js.Dict.set(types, "leaf", nat()->Objects.anyArb);
-      types;
-    });
+    let recursive =
+      Objects.letrec(tie => {
+        let types = Js.Dict.empty();
+        Js.Dict.set(
+          types,
+          "tree",
+          Combinators.oneOf([|
+            tie(. "node"),
+            tie(. "tree"),
+            tie(. "leaf"),
+          |])
+          ->Objects.anyArb,
+        );
+        Js.Dict.set(
+          types,
+          "node",
+          Combinators.tuple2(tie(. "tree"), tie(. "tree"))->Objects.anyArb,
+        );
+        Js.Dict.set(types, "leaf", nat()->Objects.anyArb);
+        types;
+      });
     let tree = Js.Dict.get(recursive, "tree")->Belt.Option.getExn;
     FcAssert.sync(property1(tree, constTrue));
-  })
+  });
 });

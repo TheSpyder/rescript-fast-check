@@ -249,16 +249,20 @@ module Objects = {
     [@bs.optional]
     withSet: bool,
     [@bs.optional]
-    withObjectString: bool
+    withObjectString: bool,
   };
   [@bs.module "fast-check"]
-  external anything: (~settings: settings=?, unit) => arbitrary(any) = "anything";
+  external anything: (~settings: settings=?, unit) => arbitrary(any) =
+    "anything";
   [@bs.module "fast-check"]
-  external object_: (~settings: settings=?, unit) => arbitrary(Js.Dict.t(any)) = "object";
+  external object_:
+    (~settings: settings=?, unit) => arbitrary(Js.Dict.t(any)) =
+    "object";
   [@bs.module "fast-check"]
-  external jsonObject: (int) => arbitrary(Js.Dict.t(Js.Json.t)) = "jsonObject";
+  external jsonObject: int => arbitrary(Js.Dict.t(Js.Json.t)) = "jsonObject";
   [@bs.module "fast-check"]
-  external unicodeJsonObject: (int) => arbitrary(Js.Dict.t(Js.Json.t)) = "unicodeJsonObject";
+  external unicodeJsonObject: int => arbitrary(Js.Dict.t(Js.Json.t)) =
+    "unicodeJsonObject";
 
   [@bs.module "fast-check"]
   external letrec:
