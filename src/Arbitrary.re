@@ -259,4 +259,10 @@ module Objects = {
   external jsonObject: (int) => arbitrary(Js.Dict.t(Js.Json.t)) = "jsonObject";
   [@bs.module "fast-check"]
   external unicodeJsonObject: (int) => arbitrary(Js.Dict.t(Js.Json.t)) = "unicodeJsonObject";
+
+  [@bs.module "fast-check"]
+  external letrec:
+    (((. Js.Dict.key) => arbitrary(any)) => Js.Dict.t(arbitrary(any))) =>
+    Js.Dict.t(arbitrary(any)) =
+    "letrec";
 };

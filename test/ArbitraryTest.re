@@ -158,5 +158,18 @@ describe("complex built-in arbitraries", () => {
     FcAssert.sync(property1(Objects.object_(~settings=Objects.settings(~maxDepth=5, ()), ()), constTrue));
     FcAssert.sync(property1(Objects.jsonObject(5), eq));
     FcAssert.sync(property1(Objects.unicodeJsonObject(5), eq));
+  });
+
+  it("letrec", () => {
+    // example from the docs
+    let recursive = Objects.letrec((tie) => {
+      let types = Js.Dict.empty();
+      Js.Dict.set(types, "tree", Combinators.oneOf([|tie(."node"), tie(."tree"), tie(."leaf")|])->Objects.anyArb);
+      Js.Dict.set(types, "node", Combinators.tuple2(tie(."tree"), tie(."tree"))->Objects.anyArb);
+      Js.Dict.set(types, "leaf", nat()->Objects.anyArb);
+      types;
+    });
+    let tree = Js.Dict.get(recursive, "tree")->Belt.Option.getExn;
+    FcAssert.sync(property1(tree, constTrue));
   })
 });
