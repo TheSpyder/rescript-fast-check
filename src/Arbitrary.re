@@ -262,12 +262,3 @@ module Objects = {
   [@bs.module "fast-check"]
   external unicodeJsonObject: (int) => arbitrary(Js.Dict.t(Js.Json.t)) = "unicodeJsonObject";
 };
-
-
-
-/* * * * * * * *
- * For objects *
- * * * * * * * */
-[@bs.module "jsverify"] external arbObject: arbitrary(Js.t('a)) = "object";
-
-[@bs.module "jsverify"] external arbJSON: arbitrary(Js.Json.t) = "json";

@@ -2,18 +2,16 @@
 
 [Fast-check](https://github.com/dubzzz/fast-check) bindings for bucklescript
 
-## Installation
-```
-$ npm install bs-fast-check
-```
+## Temporary
+These will be contributed to fast-check directly once I'm confident they are stable:
+https://github.com/dubzzz/fast-check/issues/360
 
 ## Usage
+Install from this repository
+
 In `bsconfig.json`:
 ```
   "bs-dev-dependencies": [
-    "bs-jsverify"
+    "bs-fast-check"
   ],
 ```
-
-## Credits
-Some API inspiration taken from [bs-jsverify](https://github.com/Risto-Stevcev/bs-jsverify) for ease of migration from `bs-jsverify`
