@@ -1,8 +1,8 @@
 type arbitrary('a) = Arbitrary.arbitrary('a);
 type property('a);
 type asyncProperty('a);
-type fcResult('a);
-type result('a) =
+type fcRunDetails('a);
+type runDetails('a) =
   | Passed
   | Failed(
       {
@@ -18,9 +18,9 @@ type result('a) =
       },
     );
 
-[@bs.get] external hasFailed: fcResult('a) => bool = "failed";
+[@bs.get] external hasFailed: fcRunDetails('a) => bool = "failed";
 
-let toResult: fcResult('a) => result('b);
+let toResult: fcRunDetails('a) => runDetails('b);
 
 module Parameters: {
   [@bs.deriving {abstract: light}]
@@ -31,6 +31,8 @@ module Parameters: {
     examples: array('a),
     [@bs.optional]
     interruptAfterTimeLimit: int,
+    [@bs.optional]
+    logger: string => unit,
     [@bs.optional]
     markInterruptAsFailure: bool,
     [@bs.optional]
@@ -58,7 +60,7 @@ module FcAssert: {
   [@bs.module "fast-check"] external sync: property('a) => unit = "assert";
 
   [@bs.module "fast-check"]
-  external async: asyncProperty('a) => unit = "assert";
+  external async: asyncProperty('a) => Js.Promise.t(unit) = "assert";
 };
 
 [@bs.module "fast-check"] external pre: bool => unit = "pre";
@@ -68,9 +70,9 @@ module Sync: {
   [@bs.module "fast-check"]
   external assertParams: (property('a), Parameters.t('a)) => unit = "assert";
   [@bs.module "fast-check"]
-  external check: property('a) => fcResult('a) = "check";
+  external check: property('a) => fcRunDetails('a) = "check";
   [@bs.module "fast-check"]
-  external checkParams: (property('a), Parameters.t('a)) => fcResult('a) =
+  external checkParams: (property('a), Parameters.t('a)) => fcRunDetails('a) =
     "check";
 
   [@bs.module "fast-check"]
@@ -141,15 +143,16 @@ module Sync: {
 
 module Async: {
   [@bs.module "fast-check"]
-  external assert_: asyncProperty('a) => unit = "assert";
+  external assert_: asyncProperty('a) => Js.Promise.t(unit) = "assert";
   [@bs.module "fast-check"]
-  external assertParams: (asyncProperty('a), Parameters.t('a)) => unit =
+  external assertParams:
+    (asyncProperty('a), Parameters.t('a)) => Js.Promise.t(unit) =
     "assert";
   [@bs.module "fast-check"]
-  external check: asyncProperty('a) => fcResult('a) = "check";
+  external check: asyncProperty('a) => Js.Promise.t(fcRunDetails('a)) = "check";
   [@bs.module "fast-check"]
   external checkParams:
-    (asyncProperty('a), Parameters.t('a)) => fcResult('a) =
+    (asyncProperty('a), Parameters.t('a)) => Js.Promise.t(fcRunDetails('a)) =
     "check";
 
   [@bs.module "fast-check"]
@@ -198,9 +201,12 @@ module Async: {
     asyncProperty('a) =
     "asyncProperty";
 
-  let assertProperty1: (arbitrary('a), 'a => Js.Promise.t(bool)) => unit;
+  // Convenience combining `assert` and `property` into a single function call
+  let assertProperty1:
+    (arbitrary('a), 'a => Js.Promise.t(bool)) => Js.Promise.t(unit);
   let assertProperty2:
-    (arbitrary('a), arbitrary('b), ('a, 'b) => Js.Promise.t(bool)) => unit;
+    (arbitrary('a), arbitrary('b), ('a, 'b) => Js.Promise.t(bool)) =>
+    Js.Promise.t(unit);
   let assertProperty3:
     (
       arbitrary('a),
@@ -208,7 +214,7 @@ module Async: {
       arbitrary('c),
       ('a, 'b, 'c) => Js.Promise.t(bool)
     ) =>
-    unit;
+    Js.Promise.t(unit);
   let assertProperty4:
     (
       arbitrary('a),
@@ -217,7 +223,7 @@ module Async: {
       arbitrary('d),
       ('a, 'b, 'c, 'd) => Js.Promise.t(bool)
     ) =>
-    unit;
+    Js.Promise.t(unit);
   let assertProperty5:
     (
       arbitrary('a),
@@ -227,7 +233,7 @@ module Async: {
       arbitrary('e),
       ('a, 'b, 'c, 'd, 'e) => Js.Promise.t(bool)
     ) =>
-    unit;
+    Js.Promise.t(unit);
 };
 
 /**
@@ -238,28 +244,27 @@ module Async: {
  *
  * Once they are exposed `Sync` and `Async` module types can be shared with these instead of using a Wrapped interface
  */
-module type FcWrappedProperty = {
-  type t('a);
-  type r;
 
-  let assert_: t('a) => unit;
-  let assertParams: (t('a), Parameters.t('a)) => unit;
-  let check: t('a) => fcResult('a);
-  let checkParams: (t('a), Parameters.t('a)) => fcResult('a);
-  let property1: (arbitrary('a), 'a => r) => t('a);
-  let property2: (arbitrary('a), arbitrary('b), ('a, 'b) => r) => t('a);
+module SyncUnit: {
+  let assert_: property('a) => unit;
+  let assertParams: (property('a), Parameters.t('a)) => unit;
+  let check: property('a) => fcRunDetails('a);
+  let checkParams: (property('a), Parameters.t('a)) => fcRunDetails('a);
+  let property1: (arbitrary('a), 'a => unit) => property('a);
+  let property2:
+    (arbitrary('a), arbitrary('b), ('a, 'b) => unit) => property('a);
   let property3:
-    (arbitrary('a), arbitrary('b), arbitrary('c), ('a, 'b, 'c) => r) =>
-    t('a);
+    (arbitrary('a), arbitrary('b), arbitrary('c), ('a, 'b, 'c) => unit) =>
+    property('a);
   let property4:
     (
       arbitrary('a),
       arbitrary('b),
       arbitrary('c),
       arbitrary('d),
-      ('a, 'b, 'c, 'd) => r
+      ('a, 'b, 'c, 'd) => unit
     ) =>
-    t('a);
+    property('a);
   let property5:
     (
       arbitrary('a),
@@ -267,21 +272,23 @@ module type FcWrappedProperty = {
       arbitrary('c),
       arbitrary('d),
       arbitrary('e),
-      ('a, 'b, 'c, 'd, 'e) => r
+      ('a, 'b, 'c, 'd, 'e) => unit
     ) =>
-    t('a);
+    property('a);
 
-  let assertProperty1: (arbitrary('a), 'a => r) => unit;
-  let assertProperty2: (arbitrary('a), arbitrary('b), ('a, 'b) => r) => unit;
+  let assertProperty1: (arbitrary('a), 'a => unit) => unit;
+  let assertProperty2:
+    (arbitrary('a), arbitrary('b), ('a, 'b) => unit) => unit;
   let assertProperty3:
-    (arbitrary('a), arbitrary('b), arbitrary('c), ('a, 'b, 'c) => r) => unit;
+    (arbitrary('a), arbitrary('b), arbitrary('c), ('a, 'b, 'c) => unit) =>
+    unit;
   let assertProperty4:
     (
       arbitrary('a),
       arbitrary('b),
       arbitrary('c),
       arbitrary('d),
-      ('a, 'b, 'c, 'd) => r
+      ('a, 'b, 'c, 'd) => unit
     ) =>
     unit;
   let assertProperty5:
@@ -291,16 +298,81 @@ module type FcWrappedProperty = {
       arbitrary('c),
       arbitrary('d),
       arbitrary('e),
-      ('a, 'b, 'c, 'd, 'e) => r
+      ('a, 'b, 'c, 'd, 'e) => unit
     ) =>
     unit;
 };
 
-module SyncUnit:
-  FcWrappedProperty with type t('a) := property('a) and type r := unit;
+module AsyncUnit: {
+  let assert_: asyncProperty('a) => Js.Promise.t(unit);
+  let assertParams:
+    (asyncProperty('a), Parameters.t('a)) => Js.Promise.t(unit);
+  let check: asyncProperty('a) => Js.Promise.t(fcRunDetails('a));
+  let checkParams:
+    (asyncProperty('a), Parameters.t('a)) => Js.Promise.t(fcRunDetails('a));
+  let property1:
+    (arbitrary('a), 'a => Js.Promise.t(unit)) => asyncProperty('a);
+  let property2:
+    (arbitrary('a), arbitrary('b), ('a, 'b) => Js.Promise.t(unit)) =>
+    asyncProperty('a);
+  let property3:
+    (
+      arbitrary('a),
+      arbitrary('b),
+      arbitrary('c),
+      ('a, 'b, 'c) => Js.Promise.t(unit)
+    ) =>
+    asyncProperty('a);
+  let property4:
+    (
+      arbitrary('a),
+      arbitrary('b),
+      arbitrary('c),
+      arbitrary('d),
+      ('a, 'b, 'c, 'd) => Js.Promise.t(unit)
+    ) =>
+    asyncProperty('a);
+  let property5:
+    (
+      arbitrary('a),
+      arbitrary('b),
+      arbitrary('c),
+      arbitrary('d),
+      arbitrary('e),
+      ('a, 'b, 'c, 'd, 'e) => Js.Promise.t(unit)
+    ) =>
+    asyncProperty('a);
 
-type asyncUnitResult = Js.Promise.t(unit);
-
-module AsyncUnit:
-  FcWrappedProperty with
-    type t('a) := asyncProperty('a) and type r := asyncUnitResult;
+  let assertProperty1:
+    (arbitrary('a), 'a => Js.Promise.t(unit)) => Js.Promise.t(unit);
+  let assertProperty2:
+    (arbitrary('a), arbitrary('b), ('a, 'b) => Js.Promise.t(unit)) =>
+    Js.Promise.t(unit);
+  let assertProperty3:
+    (
+      arbitrary('a),
+      arbitrary('b),
+      arbitrary('c),
+      ('a, 'b, 'c) => Js.Promise.t(unit)
+    ) =>
+    Js.Promise.t(unit);
+  let assertProperty4:
+    (
+      arbitrary('a),
+      arbitrary('b),
+      arbitrary('c),
+      arbitrary('d),
+      ('a, 'b, 'c, 'd) => Js.Promise.t(unit)
+    ) =>
+    Js.Promise.t(unit);
+  let assertProperty5:
+    (
+      arbitrary('a),
+      arbitrary('b),
+      arbitrary('c),
+      arbitrary('d),
+      arbitrary('e),
+      ('a, 'b, 'c, 'd, 'e) => Js.Promise.t(unit)
+    ) =>
+    Js.Promise.t(unit);
+};

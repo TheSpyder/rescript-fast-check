@@ -4,8 +4,8 @@ type property('a);
 type asyncProperty('a);
 
 // using types to hide the fact that the same object is returned in all cases
-type fcResult('a);
-type result('a) =
+type fcRunDetails('a);
+type runDetails('a) =
   | Passed
   | Failed(
       {
@@ -23,7 +23,7 @@ type result('a) =
       },
     );
 
-[@bs.get] external hasFailed: fcResult('a) => bool = "failed";
+[@bs.get] external hasFailed: fcRunDetails('a) => bool = "failed";
 
 let toResult = r => hasFailed(r) ? Failed(Obj.magic(r)) : Passed;
 
@@ -36,6 +36,8 @@ module Parameters = {
     examples: array('a),
     [@bs.optional]
     interruptAfterTimeLimit: int,
+    [@bs.optional]
+    logger: (string) => unit,
     [@bs.optional]
     markInterruptAsFailure: bool,
     [@bs.optional]
@@ -63,7 +65,7 @@ module FcAssert = {
   [@bs.module "fast-check"] external sync: property('a) => unit = "assert";
 
   [@bs.module "fast-check"]
-  external async: asyncProperty('a) => unit = "assert";
+  external async: asyncProperty('a) => Js.Promise.t(unit) = "assert";
 };
 
 module MakeSync = (M: {type r;}) => {
@@ -73,9 +75,9 @@ module MakeSync = (M: {type r;}) => {
   [@bs.module "fast-check"]
   external assertParams: (property('a), Parameters.t('a)) => unit = "assert";
   [@bs.module "fast-check"]
-  external check: property('a) => fcResult('a) = "check";
+  external check: property('a) => fcRunDetails('a) = "check";
   [@bs.module "fast-check"]
-  external checkParams: (property('a), Parameters.t('a)) => fcResult('a) =
+  external checkParams: (property('a), Parameters.t('a)) => fcRunDetails('a) =
     "check";
 
   [@bs.module "fast-check"]
@@ -131,15 +133,15 @@ module MakeAsync = (M: {type r;}) => {
   type r = M.r;
 
   [@bs.module "fast-check"]
-  external assert_: asyncProperty('a) => unit = "assert";
+  external assert_: asyncProperty('a) => Js.Promise.t(unit) = "assert";
   [@bs.module "fast-check"]
-  external assertParams: (asyncProperty('a), Parameters.t('a)) => unit =
+  external assertParams: (asyncProperty('a), Parameters.t('a)) => Js.Promise.t(unit) =
     "assert";
   [@bs.module "fast-check"]
-  external check: asyncProperty('a) => fcResult('a) = "check";
+  external check: asyncProperty('a) => Js.Promise.t(fcRunDetails('a)) = "check";
   [@bs.module "fast-check"]
   external checkParams:
-    (asyncProperty('a), Parameters.t('a)) => fcResult('a) =
+    (asyncProperty('a), Parameters.t('a)) => Js.Promise.t(fcRunDetails('a)) =
     "check";
 
   [@bs.module "fast-check"]
@@ -217,7 +219,8 @@ module Async =
  * The property functions only check for falsy values to trigger the boolean path, so we need to do
  * a bunch of extra work to return undefined
  *
- * NOTE: the void modules are not exposed. Only the unit wrappers.
+ * NOTE: the void modules are not exposed. Only the unit wrappers. If BuckleScript changes behaviour,
+ * void can be renamed unit (this will make the interface simpler too)
  */
 type void = Js.undefined(unit);
 module SyncVoid =
@@ -358,64 +361,3 @@ module AsyncUnit = {
   let assertProperty5 = (arb1, arb2, arb3, arb4, arb5, f) =>
     AsyncVoid.assert_(property5(arb1, arb2, arb3, arb4, arb5, f));
 };
-
-// unused, probably should move to an Interfaces file
-module type FcWrappedProperty = {
-  type t('a);
-  type r;
-
-  let assert_: t('a) => unit;
-  let assertParams: (t('a), Parameters.t('a)) => unit;
-  let check: t('a) => fcResult('a);
-  let checkParams: (t('a), Parameters.t('a)) => fcResult('a);
-  let property1: (arbitrary('a), 'a => r) => t('a);
-  let property2: (arbitrary('a), arbitrary('b), ('a, 'b) => r) => t('a);
-  let property3:
-    (arbitrary('a), arbitrary('b), arbitrary('c), ('a, 'b, 'c) => r) =>
-    t('a);
-  let property4:
-    (
-      arbitrary('a),
-      arbitrary('b),
-      arbitrary('c),
-      arbitrary('d),
-      ('a, 'b, 'c, 'd) => r
-    ) =>
-    t('a);
-  let property5:
-    (
-      arbitrary('a),
-      arbitrary('b),
-      arbitrary('c),
-      arbitrary('d),
-      arbitrary('e),
-      ('a, 'b, 'c, 'd, 'e) => r
-    ) =>
-    t('a);
-
-  let assertProperty1: (arbitrary('a), 'a => r) => unit;
-  let assertProperty2: (arbitrary('a), arbitrary('b), ('a, 'b) => r) => unit;
-  let assertProperty3:
-    (arbitrary('a), arbitrary('b), arbitrary('c), ('a, 'b, 'c) => r) => unit;
-  let assertProperty4:
-    (
-      arbitrary('a),
-      arbitrary('b),
-      arbitrary('c),
-      arbitrary('d),
-      ('a, 'b, 'c, 'd) => r
-    ) =>
-    unit;
-  let assertProperty5:
-    (
-      arbitrary('a),
-      arbitrary('b),
-      arbitrary('c),
-      arbitrary('d),
-      arbitrary('e),
-      ('a, 'b, 'c, 'd, 'e) => r
-    ) =>
-    unit;
-};
-
-type asyncUnitResult = Js.Promise.t(unit);
