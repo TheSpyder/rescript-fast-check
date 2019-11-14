@@ -66,104 +66,29 @@ module FcAssert = {
   external async: asyncProperty('a) => unit = "assert";
 };
 
-// These duplicate external definitions will move to the interface file where they belong once it solidifies
-module type FcProperty = {
-  type t('a);
-  type r;
-
-  [@bs.module "fast-check"] external assert_: t('a) => unit = "assert";
-  [@bs.module "fast-check"]
-  external assertParams: (t('a), Parameters.t('a)) => unit = "assert";
-  [@bs.module "fast-check"] external check: t('a) => fcResult('a) = "check";
-  [@bs.module "fast-check"]
-  external checkParams: (t('a), Parameters.t('a)) => fcResult('a) = "check";
-
-  [@bs.module "fast-check"]
-  external property1: (arbitrary('a), 'a => r) => t('a) = "property";
-
-  [@bs.module "fast-check"]
-  external property2: (arbitrary('a), arbitrary('b), ('a, 'b) => r) => t('a) =
-    "property";
-  [@bs.module "fast-check"]
-  external property3:
-    (arbitrary('a), arbitrary('b), arbitrary('c), ('a, 'b, 'c) => r) =>
-    t('a) =
-    "property";
-
-  [@bs.module "fast-check"]
-  external property4:
-    (
-      arbitrary('a),
-      arbitrary('b),
-      arbitrary('c),
-      arbitrary('d),
-      ('a, 'b, 'c, 'd) => r
-    ) =>
-    t('a) =
-    "property";
-
-  [@bs.module "fast-check"]
-  external property5:
-    (
-      arbitrary('a),
-      arbitrary('b),
-      arbitrary('c),
-      arbitrary('d),
-      arbitrary('e),
-      ('a, 'b, 'c, 'd, 'e) => r
-    ) =>
-    t('a) =
-    "property";
-
-  let assertProperty1: (arbitrary('a), 'a => r) => unit;
-  let assertProperty2: (arbitrary('a), arbitrary('b), ('a, 'b) => r) => unit;
-  let assertProperty3:
-    (arbitrary('a), arbitrary('b), arbitrary('c), ('a, 'b, 'c) => r) => unit;
-  let assertProperty4:
-    (
-      arbitrary('a),
-      arbitrary('b),
-      arbitrary('c),
-      arbitrary('d),
-      ('a, 'b, 'c, 'd) => r
-    ) =>
-    unit;
-  let assertProperty5:
-    (
-      arbitrary('a),
-      arbitrary('b),
-      arbitrary('c),
-      arbitrary('d),
-      arbitrary('e),
-      ('a, 'b, 'c, 'd, 'e) => r
-    ) =>
-    unit;
-};
-
-module Make = (M: {
-                 type t('a);
-                 type r;
-               }) => {
-  type t('a) = M.t('a);
+module MakeSync = (M: {type r;}) => {
   type r = M.r;
 
-  [@bs.module "fast-check"] external assert_: t('a) => unit = "assert";
+  [@bs.module "fast-check"] external assert_: property('a) => unit = "assert";
   [@bs.module "fast-check"]
-  external assertParams: (t('a), Parameters.t('a)) => unit = "assert";
-  [@bs.module "fast-check"] external check: t('a) => fcResult('a) = "check";
+  external assertParams: (property('a), Parameters.t('a)) => unit = "assert";
   [@bs.module "fast-check"]
-  external checkParams: (t('a), Parameters.t('a)) => fcResult('a) = "check";
+  external check: property('a) => fcResult('a) = "check";
+  [@bs.module "fast-check"]
+  external checkParams: (property('a), Parameters.t('a)) => fcResult('a) =
+    "check";
 
   [@bs.module "fast-check"]
-  external property1: (arbitrary('a), 'a => r) => t('a) = "property";
+  external property1: (arbitrary('a), 'a => r) => property('a) = "property";
 
   [@bs.module "fast-check"]
-  external property2: (arbitrary('a), arbitrary('b), ('a, 'b) => r) => t('a) =
+  external property2:
+    (arbitrary('a), arbitrary('b), ('a, 'b) => r) => property('a) =
     "property";
   [@bs.module "fast-check"]
   external property3:
     (arbitrary('a), arbitrary('b), arbitrary('c), ('a, 'b, 'c) => r) =>
-    t('a) =
+    property('a) =
     "property";
 
   [@bs.module "fast-check"]
@@ -175,7 +100,7 @@ module Make = (M: {
       arbitrary('d),
       ('a, 'b, 'c, 'd) => r
     ) =>
-    t('a) =
+    property('a) =
     "property";
 
   [@bs.module "fast-check"]
@@ -188,7 +113,7 @@ module Make = (M: {
       arbitrary('e),
       ('a, 'b, 'c, 'd, 'e) => r
     ) =>
-    t('a) =
+    property('a) =
     "property";
 
   let assertProperty1 = (arb, f) => assert_(property1(arb, f));
@@ -202,20 +127,86 @@ module Make = (M: {
     assert_(property5(arb1, arb2, arb3, arb4, arb5, f));
 };
 
-// The type annotation (including `with type`) will move to the interface file soon
-module Sync: FcProperty with type t('a) := property('a) and type r := bool =
-  Make({
-    type t('a) = property('a);
+module MakeAsync = (M: {type r;}) => {
+  type r = M.r;
+
+  [@bs.module "fast-check"]
+  external assert_: asyncProperty('a) => unit = "assert";
+  [@bs.module "fast-check"]
+  external assertParams: (asyncProperty('a), Parameters.t('a)) => unit =
+    "assert";
+  [@bs.module "fast-check"]
+  external check: asyncProperty('a) => fcResult('a) = "check";
+  [@bs.module "fast-check"]
+  external checkParams:
+    (asyncProperty('a), Parameters.t('a)) => fcResult('a) =
+    "check";
+
+  [@bs.module "fast-check"]
+  external property1:
+    (arbitrary('a), 'a => Js.Promise.t(r)) => asyncProperty('a) =
+    "asyncProperty";
+
+  [@bs.module "fast-check"]
+  external property2:
+    (arbitrary('a), arbitrary('b), ('a, 'b) => Js.Promise.t(r)) =>
+    asyncProperty('a) =
+    "asyncProperty";
+  [@bs.module "fast-check"]
+  external property3:
+    (
+      arbitrary('a),
+      arbitrary('b),
+      arbitrary('c),
+      ('a, 'b, 'c) => Js.Promise.t(r)
+    ) =>
+    asyncProperty('a) =
+    "asyncProperty";
+
+  [@bs.module "fast-check"]
+  external property4:
+    (
+      arbitrary('a),
+      arbitrary('b),
+      arbitrary('c),
+      arbitrary('d),
+      ('a, 'b, 'c, 'd) => Js.Promise.t(r)
+    ) =>
+    asyncProperty('a) =
+    "asyncProperty";
+
+  [@bs.module "fast-check"]
+  external property5:
+    (
+      arbitrary('a),
+      arbitrary('b),
+      arbitrary('c),
+      arbitrary('d),
+      arbitrary('e),
+      ('a, 'b, 'c, 'd, 'e) => Js.Promise.t(r)
+    ) =>
+    asyncProperty('a) =
+    "asyncProperty";
+
+  let assertProperty1 = (arb, f) => assert_(property1(arb, f));
+  let assertProperty2 = (arb1, arb2, f) =>
+    assert_(property2(arb1, arb2, f));
+  let assertProperty3 = (arb1, arb2, arb3, f) =>
+    assert_(property3(arb1, arb2, arb3, f));
+  let assertProperty4 = (arb1, arb2, arb3, arb4, f) =>
+    assert_(property4(arb1, arb2, arb3, arb4, f));
+  let assertProperty5 = (arb1, arb2, arb3, arb4, arb5, f) =>
+    assert_(property5(arb1, arb2, arb3, arb4, arb5, f));
+};
+
+module Sync =
+  MakeSync({
     type r = bool;
   });
 
-type asyncResult = Js.Promise.t(bool);
-
-module Async:
-  FcProperty with type t('a) := asyncProperty('a) and type r := asyncResult =
-  Make({
-    type t('a) = asyncProperty('a);
-    type r = asyncResult;
+module Async =
+  MakeAsync({
+    type r = bool;
   });
 
 [@bs.module "fast-check"] external pre: bool => unit = "pre";
@@ -224,13 +215,13 @@ module Async:
  * The void/unit modules have to be manual, because BuckleScript compiles unit as `0`, not `undefined`
  *
  * The property functions only check for falsy values to trigger the boolean path, so we need to do
- * a bunch of extra work to
+ * a bunch of extra work to return undefined
+ *
+ * NOTE: the void modules are not exposed. Only the unit wrappers.
  */
 type void = Js.undefined(unit);
-module SyncVoid:
-  FcProperty with type t('a) := property('a) and type r := void =
-  Make({
-    type t('a) = property('a);
+module SyncVoid =
+  MakeSync({
     type r = void;
   });
 
@@ -311,72 +302,49 @@ module SyncUnit = {
     SyncVoid.assert_(property5(arb1, arb2, arb3, arb4, arb5, f));
 };
 
-type asyncVoidResult = Js.Promise.t(Js.undefined(unit));
+type asyncVoidResult = Js.undefined(unit);
 
-module AsyncVoid:
-  FcProperty with
-    type t('a) := asyncProperty('a) and type r := asyncVoidResult =
-  Make({
-    type t('a) = asyncProperty('a);
+module AsyncVoid =
+  MakeAsync({
     type r = asyncVoidResult;
   });
 
-type asyncUnitResult = Js.Promise.t(unit);
 module AsyncUnit = {
   let assert_ = AsyncVoid.assert_;
   let assertParams = AsyncVoid.assertParams;
   let check = AsyncVoid.check;
   let checkParams = AsyncVoid.checkParams;
 
+  // BuckleScript promise bindings require wrapping
+  let resolveUndefined = _ => Js.Promise.resolve(Js.Undefined.empty);
+
   let property1 = (arb, uf) => {
     AsyncVoid.property1(arb, a =>
-      uf(a)->Js.Promise.then_(_ => Js.Promise.resolve(Js.Undefined.empty), _)
+      uf(a)->Js.Promise.then_(resolveUndefined, _)
     );
   };
 
   let property2 = (arb1, arb2, uf) => {
-    AsyncVoid.property2(
-      arb1,
-      arb2,
-      (a, b) => {
-        uf(a, b)->Js.Promise.then_(_ => Js.Promise.resolve(Js.Undefined.empty), _)
-      },
+    AsyncVoid.property2(arb1, arb2, (a, b) =>
+      uf(a, b)->Js.Promise.then_(resolveUndefined, _)
     );
   };
 
   let property3 = (arb1, arb2, arb3, uf) => {
-    AsyncVoid.property3(
-      arb1,
-      arb2,
-      arb3,
-      (a, b, c) => {
-        uf(a, b, c)->Js.Promise.then_(_ => Js.Promise.resolve(Js.Undefined.empty), _)
-      },
+    AsyncVoid.property3(arb1, arb2, arb3, (a, b, c) =>
+      uf(a, b, c)->Js.Promise.then_(resolveUndefined, _)
     );
   };
 
   let property4 = (arb1, arb2, arb3, arb4, uf) => {
-    AsyncVoid.property4(
-      arb1,
-      arb2,
-      arb3,
-      arb4,
-      (a, b, c, d) => {
-        uf(a, b, c, d)->Js.Promise.then_(_ => Js.Promise.resolve(Js.Undefined.empty), _)
-      },
+    AsyncVoid.property4(arb1, arb2, arb3, arb4, (a, b, c, d) =>
+      uf(a, b, c, d)->Js.Promise.then_(resolveUndefined, _)
     );
   };
 
   let property5 = (arb1, arb2, arb3, arb4, arb5, uf) => {
-    AsyncVoid.property5(
-      arb1,
-      arb2,
-      arb3,
-      arb4,
-      arb5,
-      (a, b, c, d, e) => {
-        uf(a, b, c, d, e)->Js.Promise.then_(_ => Js.Promise.resolve(Js.Undefined.empty), _)
-      },
+    AsyncVoid.property5(arb1, arb2, arb3, arb4, arb5, (a, b, c, d, e) =>
+      uf(a, b, c, d, e)->Js.Promise.then_(resolveUndefined, _)
     );
   };
 
@@ -391,7 +359,7 @@ module AsyncUnit = {
     AsyncVoid.assert_(property5(arb1, arb2, arb3, arb4, arb5, f));
 };
 
-// unused, but requried to avoid duplication in the interface
+// unused, probably should move to an Interfaces file
 module type FcWrappedProperty = {
   type t('a);
   type r;
@@ -449,3 +417,5 @@ module type FcWrappedProperty = {
     ) =>
     unit;
 };
+
+type asyncUnitResult = Js.Promise.t(unit);

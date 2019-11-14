@@ -6,16 +6,16 @@ let testParams =
   Parameters.t(
     ~endOnFailure=true,
     ~examples=[|true|],
-    ~interruptAfterTimeLimit=5,
+    ~interruptAfterTimeLimit=999,
     ~markInterruptAsFailure=true,
-    ~maxSkipsPerRun=5,
-    ~numRuns=3,
+    ~maxSkipsPerRun=999,
+    ~numRuns=1,
     ~path="",
     ~seed=3,
-    ~skipAllAfterTimeLimit=5,
+    ~skipAllAfterTimeLimit=999,
     ~timeout=999,
     ~unbiased=false,
-    ~verbose=false,
+    ~verbose=true,
     (),
   );
 
@@ -41,7 +41,6 @@ describe("sync property checks", () => {
     assertParams(property1(boolean(), eq), testParams);
 
     let checkResult = check(property1(boolean(), eq));
-    Js.log(checkResult);
     switch (toResult(checkResult)) {
     | Passed => ()
     | Failed(r) =>
@@ -107,7 +106,6 @@ describe("syncUnit property checks", () => {
     assertParams(property1(boolean(), eq), testParams);
 
     let checkResult = check(property1(boolean(), eq));
-    Js.log(checkResult);
     switch (toResult(checkResult)) {
     | Passed => ()
     | Failed(r) =>
@@ -138,6 +136,137 @@ describe("syncUnit property checks", () => {
     );
   });
   it("syncUnit assertProperty", () => {
+    assertProperty1(boolean(), eq);
+    assertProperty2(boolean(), boolean(), eq2);
+    assertProperty3(boolean(), boolean(), boolean(), eq3);
+    assertProperty4(boolean(), boolean(), boolean(), boolean(), eq4);
+    assertProperty5(
+      boolean(),
+      boolean(),
+      boolean(),
+      boolean(),
+      boolean(),
+      eq5,
+    );
+  });
+});
+
+describe("async property checks", () => {
+  let eq = i => Js.Promise.resolve(i === i);
+  let eq2 = (i, j) => Js.Promise.resolve(i === i && j === j);
+  let eq3 = (i, j, k) => Js.Promise.resolve(i === i && j === j && k === k);
+  let eq4 = (i, j, k, l) => Js.Promise.resolve(i === i && j === j && k === k && l === l);
+  let eq5 = (i, j, k, l, m) =>
+    Js.Promise.resolve(i === i && j === j && k === k && l === l && m === m);
+  open Property.Async;
+  it("async assert_", () => {
+    assert_(property1(boolean(), eq));
+    assert_(property2(boolean(), boolean(), eq2));
+    assert_(property3(boolean(), boolean(), boolean(), eq3));
+    assert_(property4(boolean(), boolean(), boolean(), boolean(), eq4));
+    assert_(
+      property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5),
+    );
+  });
+  it("async assert / check params", () => {
+    assertParams(property1(boolean(), eq), testParams);
+
+    let checkResult = check(property1(boolean(), eq));
+    switch (toResult(checkResult)) {
+    | Passed => ()
+    | Failed(r) =>
+      let _ = r##counterexample;
+      let _ = r##counterexamplePath;
+      let _ = r##error;
+      let _ = r##failures;
+      let _ = r##numRuns;
+      let _ = r##numShrinks;
+      let _ = r##numSkips;
+      let _ = r##seed;
+      ();
+    };
+
+    let _ = checkParams(property1(boolean(), eq), testParams);
+
+    pre(true);
+  });
+  it("async FcAssert", () => {
+    FcAssert.async(property1(boolean(), eq));
+    FcAssert.async(property2(boolean(), boolean(), eq2));
+    FcAssert.async(property3(boolean(), boolean(), boolean(), eq3));
+    FcAssert.async(
+      property4(boolean(), boolean(), boolean(), boolean(), eq4),
+    );
+    FcAssert.async(
+      property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5),
+    );
+  });
+  it("async assertProperty", () => {
+    assertProperty1(boolean(), eq);
+    assertProperty2(boolean(), boolean(), eq2);
+    assertProperty3(boolean(), boolean(), boolean(), eq3);
+    assertProperty4(boolean(), boolean(), boolean(), boolean(), eq4);
+    assertProperty5(
+      boolean(),
+      boolean(),
+      boolean(),
+      boolean(),
+      boolean(),
+      eq5,
+    );
+  });
+});
+
+describe("asyncUnit property checks", () => {
+  let eq = _ => Js.Promise.resolve(());
+  let eq2 = (_, _) => Js.Promise.resolve(());
+  let eq3 = (_, _, _) => Js.Promise.resolve(());
+  let eq4 = (_, _, _, _) => Js.Promise.resolve(());
+  let eq5 = (_, _, _, _, _) => Js.Promise.resolve(());
+  open Property.AsyncUnit;
+  it("asyncUnit assert_", () => {
+    assert_(property1(boolean(), eq));
+    assert_(property2(boolean(), boolean(), eq2));
+    assert_(property3(boolean(), boolean(), boolean(), eq3));
+    assert_(property4(boolean(), boolean(), boolean(), boolean(), eq4));
+    assert_(
+      property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5),
+    );
+  });
+  it("asyncUnit assert / check params", () => {
+    assertParams(property1(boolean(), eq), testParams);
+
+    let checkResult = check(property1(boolean(), eq));
+    switch (toResult(checkResult)) {
+    | Passed => ()
+    | Failed(r) =>
+      let _ = r##counterexample;
+      let _ = r##counterexamplePath;
+      let _ = r##error;
+      let _ = r##failures;
+      let _ = r##numRuns;
+      let _ = r##numShrinks;
+      let _ = r##numSkips;
+      let _ = r##seed;
+      ();
+    };
+
+    let _ = checkParams(property1(boolean(), eq), testParams);
+
+    pre(true);
+  });
+  it("asyncUnit FcAssert", () => {
+    FcAssert.async(property1(boolean(), eq));
+    FcAssert.async(property2(boolean(), boolean(), eq2));
+    FcAssert.async(property3(boolean(), boolean(), boolean(), eq3));
+    FcAssert.async(
+      property4(boolean(), boolean(), boolean(), boolean(), eq4),
+    );
+    FcAssert.async(
+      property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5),
+    );
+  });
+  it("asyncUnit assertProperty", () => {
     assertProperty1(boolean(), eq);
     assertProperty2(boolean(), boolean(), eq2);
     assertProperty3(boolean(), boolean(), boolean(), eq3);

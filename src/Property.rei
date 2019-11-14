@@ -17,8 +17,11 @@ type result('a) =
         "seed": int,
       },
     );
+
 [@bs.get] external hasFailed: fcResult('a) => bool = "failed";
+
 let toResult: fcResult('a) => result('b);
+
 module Parameters: {
   [@bs.deriving {abstract: light}]
   type t('a) = {
@@ -49,6 +52,8 @@ module Parameters: {
     verbose: bool // todo this blocks VeryVerbose
   };
 };
+
+// Convenience for those who don't like calling `assert_`
 module FcAssert: {
   [@bs.module "fast-check"] external sync: property('a) => unit = "assert";
 
@@ -58,27 +63,28 @@ module FcAssert: {
 
 [@bs.module "fast-check"] external pre: bool => unit = "pre";
 
-module type FcProperty = {
-  type t('a);
-  type r;
-
-  [@bs.module "fast-check"] external assert_: t('a) => unit = "assert";
+module Sync: {
+  [@bs.module "fast-check"] external assert_: property('a) => unit = "assert";
   [@bs.module "fast-check"]
-  external assertParams: (t('a), Parameters.t('a)) => unit = "assert";
-  [@bs.module "fast-check"] external check: t('a) => fcResult('a) = "check";
+  external assertParams: (property('a), Parameters.t('a)) => unit = "assert";
   [@bs.module "fast-check"]
-  external checkParams: (t('a), Parameters.t('a)) => fcResult('a) = "check";
-
+  external check: property('a) => fcResult('a) = "check";
   [@bs.module "fast-check"]
-  external property1: (arbitrary('a), 'a => r) => t('a) = "property";
+  external checkParams: (property('a), Parameters.t('a)) => fcResult('a) =
+    "check";
 
   [@bs.module "fast-check"]
-  external property2: (arbitrary('a), arbitrary('b), ('a, 'b) => r) => t('a) =
+  external property1: (arbitrary('a), 'a => bool) => property('a) =
+    "property";
+
+  [@bs.module "fast-check"]
+  external property2:
+    (arbitrary('a), arbitrary('b), ('a, 'b) => bool) => property('a) =
     "property";
   [@bs.module "fast-check"]
   external property3:
-    (arbitrary('a), arbitrary('b), arbitrary('c), ('a, 'b, 'c) => r) =>
-    t('a) =
+    (arbitrary('a), arbitrary('b), arbitrary('c), ('a, 'b, 'c) => bool) =>
+    property('a) =
     "property";
 
   [@bs.module "fast-check"]
@@ -88,9 +94,9 @@ module type FcProperty = {
       arbitrary('b),
       arbitrary('c),
       arbitrary('d),
-      ('a, 'b, 'c, 'd) => r
+      ('a, 'b, 'c, 'd) => bool
     ) =>
-    t('a) =
+    property('a) =
     "property";
 
   [@bs.module "fast-check"]
@@ -101,22 +107,24 @@ module type FcProperty = {
       arbitrary('c),
       arbitrary('d),
       arbitrary('e),
-      ('a, 'b, 'c, 'd, 'e) => r
+      ('a, 'b, 'c, 'd, 'e) => bool
     ) =>
-    t('a) =
+    property('a) =
     "property";
 
-  let assertProperty1: (arbitrary('a), 'a => r) => unit;
-  let assertProperty2: (arbitrary('a), arbitrary('b), ('a, 'b) => r) => unit;
+  let assertProperty1: (arbitrary('a), 'a => bool) => unit;
+  let assertProperty2:
+    (arbitrary('a), arbitrary('b), ('a, 'b) => bool) => unit;
   let assertProperty3:
-    (arbitrary('a), arbitrary('b), arbitrary('c), ('a, 'b, 'c) => r) => unit;
+    (arbitrary('a), arbitrary('b), arbitrary('c), ('a, 'b, 'c) => bool) =>
+    unit;
   let assertProperty4:
     (
       arbitrary('a),
       arbitrary('b),
       arbitrary('c),
       arbitrary('d),
-      ('a, 'b, 'c, 'd) => r
+      ('a, 'b, 'c, 'd) => bool
     ) =>
     unit;
   let assertProperty5:
@@ -126,22 +134,109 @@ module type FcProperty = {
       arbitrary('c),
       arbitrary('d),
       arbitrary('e),
-      ('a, 'b, 'c, 'd, 'e) => r
+      ('a, 'b, 'c, 'd, 'e) => bool
     ) =>
     unit;
 };
 
-module Sync: FcProperty with type t('a) := property('a) and type r := bool;
+module Async: {
+  [@bs.module "fast-check"]
+  external assert_: asyncProperty('a) => unit = "assert";
+  [@bs.module "fast-check"]
+  external assertParams: (asyncProperty('a), Parameters.t('a)) => unit =
+    "assert";
+  [@bs.module "fast-check"]
+  external check: asyncProperty('a) => fcResult('a) = "check";
+  [@bs.module "fast-check"]
+  external checkParams:
+    (asyncProperty('a), Parameters.t('a)) => fcResult('a) =
+    "check";
 
-type asyncResult = Js.Promise.t(bool);
-module Async:
-  FcProperty with type t('a) := asyncProperty('a) and type r := asyncResult;
+  [@bs.module "fast-check"]
+  external property1:
+    (arbitrary('a), 'a => Js.Promise.t(bool)) => asyncProperty('a) =
+    "asyncProperty";
+
+  [@bs.module "fast-check"]
+  external property2:
+    (arbitrary('a), arbitrary('b), ('a, 'b) => Js.Promise.t(bool)) =>
+    asyncProperty('a) =
+    "asyncProperty";
+  [@bs.module "fast-check"]
+  external property3:
+    (
+      arbitrary('a),
+      arbitrary('b),
+      arbitrary('c),
+      ('a, 'b, 'c) => Js.Promise.t(bool)
+    ) =>
+    asyncProperty('a) =
+    "asyncProperty";
+
+  [@bs.module "fast-check"]
+  external property4:
+    (
+      arbitrary('a),
+      arbitrary('b),
+      arbitrary('c),
+      arbitrary('d),
+      ('a, 'b, 'c, 'd) => Js.Promise.t(bool)
+    ) =>
+    asyncProperty('a) =
+    "asyncProperty";
+
+  [@bs.module "fast-check"]
+  external property5:
+    (
+      arbitrary('a),
+      arbitrary('b),
+      arbitrary('c),
+      arbitrary('d),
+      arbitrary('e),
+      ('a, 'b, 'c, 'd, 'e) => Js.Promise.t(bool)
+    ) =>
+    asyncProperty('a) =
+    "asyncProperty";
+
+  let assertProperty1: (arbitrary('a), 'a => Js.Promise.t(bool)) => unit;
+  let assertProperty2:
+    (arbitrary('a), arbitrary('b), ('a, 'b) => Js.Promise.t(bool)) => unit;
+  let assertProperty3:
+    (
+      arbitrary('a),
+      arbitrary('b),
+      arbitrary('c),
+      ('a, 'b, 'c) => Js.Promise.t(bool)
+    ) =>
+    unit;
+  let assertProperty4:
+    (
+      arbitrary('a),
+      arbitrary('b),
+      arbitrary('c),
+      arbitrary('d),
+      ('a, 'b, 'c, 'd) => Js.Promise.t(bool)
+    ) =>
+    unit;
+  let assertProperty5:
+    (
+      arbitrary('a),
+      arbitrary('b),
+      arbitrary('c),
+      arbitrary('d),
+      arbitrary('e),
+      ('a, 'b, 'c, 'd, 'e) => Js.Promise.t(bool)
+    ) =>
+    unit;
+};
 
 /**
  * The void/unit modules aren't simple external mappings because BuckleScript compiles unit as `0`, not `undefined`
  *
  * The fc.property() function allows falsy predicate return values to trigger the boolean path, so we need to do
  * a bunch of manual work to make sure BuckleScript returns `undefined`
+ *
+ * Once they are exposed `Sync` and `Async` module types can be shared with these instead of using a Wrapped interface
  */
 module type FcWrappedProperty = {
   type t('a);
@@ -152,8 +247,7 @@ module type FcWrappedProperty = {
   let check: t('a) => fcResult('a);
   let checkParams: (t('a), Parameters.t('a)) => fcResult('a);
   let property1: (arbitrary('a), 'a => r) => t('a);
-  let property2:
-    (arbitrary('a), arbitrary('b), ('a, 'b) => r) => t('a);
+  let property2: (arbitrary('a), arbitrary('b), ('a, 'b) => r) => t('a);
   let property3:
     (arbitrary('a), arbitrary('b), arbitrary('c), ('a, 'b, 'c) => r) =>
     t('a);
@@ -202,9 +296,11 @@ module type FcWrappedProperty = {
     unit;
 };
 
-module SyncUnit: FcWrappedProperty with type t('a) := property('a) and type r := unit;
+module SyncUnit:
+  FcWrappedProperty with type t('a) := property('a) and type r := unit;
 
 type asyncUnitResult = Js.Promise.t(unit);
 
 module AsyncUnit:
-  FcWrappedProperty with type t('a) := asyncProperty('a) and type r := asyncUnitResult;
+  FcWrappedProperty with
+    type t('a) := asyncProperty('a) and type r := asyncUnitResult;
