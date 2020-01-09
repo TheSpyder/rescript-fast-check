@@ -71,6 +71,7 @@ describe("primitive built-in arbitraries", () => {
 describe("combinators", () => {
   open Combinators;
   it("methods on arbitraries", () => {
+    open Derive;
     FcAssert.sync(property1(map(hexa(), s => s ++ s), eq));
     FcAssert.sync(property1(filter(hexa(), _ => true), eq));
     FcAssert.sync(property1(chain(hexa(), constant), eq));

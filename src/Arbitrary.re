@@ -30,8 +30,8 @@ module Types = {
       };
 };
 
-module Combinators = {
-  // methods on the arbitrary instances
+  // Advanced arbitraries, methods on the arbitrary instances to derive new arbitraries
+module Derive = {
   [@bs.send]
   external chain: (arbitrary('a), 'a => arbitrary('b)) => arbitrary('b) =
     "chain";
@@ -41,7 +41,9 @@ module Combinators = {
   external filter: (arbitrary('a), 'a => bool) => arbitrary('a) = "filter";
   [@bs.send] external noShrink: arbitrary('a) => arbitrary('a) = "noShrink";
   [@bs.send] external noBias: arbitrary('a) => arbitrary('a) = "noBias";
+};
 
+module Combinators = {
   // methods on fast-check itself
   [@bs.module "fast-check"]
   external constant: 'a => arbitrary('a) = "constant";
@@ -138,10 +140,10 @@ module Combinators = {
    * and this function returns an option.
    */
   let option: arbitrary('a) => arbitrary(option('a)) =
-    arb => null(arb)->map(Js.Null.toOption);
+    arb => Derive.map(null(arb), Js.Null.toOption);
 
   let list: arbitrary('a) => arbitrary(list('a)) =
-    a => map(array(a), Array.to_list);
+    a => Derive.map(array(a), Array.to_list);
 };
 
 [@bs.module "fast-check"]
