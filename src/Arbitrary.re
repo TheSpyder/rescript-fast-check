@@ -49,7 +49,9 @@ module Combinators = {
   external constant: 'a => arbitrary('a) = "constant";
   [@bs.module "fast-check"] [@bs.variadic]
   external constantFrom: array('a) => arbitrary('a) = "constantFrom";
-  // fc.clonedConstant - unsure about this - what's fc.cloneMethod?
+
+  // NOT MAPPED fc.clonedConstant - unsure about this - what's fc.cloneMethod?
+
   [@bs.module "fast-check"] [@bs.variadic]
   external mapToConstant:
     array({
@@ -61,8 +63,10 @@ module Combinators = {
     "mapToConstant";
   [@bs.module "fast-check"] [@bs.variadic]
   external oneOf: array(arbitrary('a)) => arbitrary('a) = "oneof";
-  // fc.frequency - how do we distinguish WeightedArbitrary in the type system?
+
+  // NOT MAPPED fc.frequency - how do we distinguish WeightedArbitrary in the type system?
   // fc.option - renamed, see below
+
   [@bs.module "fast-check"]
   external subArray: array('a) => arbitrary(array('a)) = "subarray";
   [@bs.module "fast-check"]
@@ -89,8 +93,8 @@ module Combinators = {
     arbitrary(array('a)) =
     "set";
 
-  // slightly tweaked because tuples are arrays
-  // and limited to 5 because I don't feel like doing any more
+  // slightly tweaked because tuples are arrays in ReasonML
+  // fast-check is not limited to 5,
   [@bs.module "fast-check"]
   external tuple2: (arbitrary('a), arbitrary('b)) => arbitrary(('a, 'b)) =
     "tuple";

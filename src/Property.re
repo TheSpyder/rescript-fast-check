@@ -3,7 +3,7 @@ type arbitrary('a) = Arbitrary.arbitrary('a);
 type property('a);
 type asyncProperty('a);
 
-/* TODO not well documented:
+/* TODO not well documented so unsure how to bind:
    TIPS 1:
 
    The output of property and asyncProperty (respectively Property and AsyncProperty) accepts optional beforeEach and afterEach hooks that would be invoked before and after the execution of the predicate.
@@ -61,7 +61,7 @@ module Parameters = {
     numRuns: int,
     [@bs.optional]
     path: string,
-    // [@bs.optional] randomType tbd this looks hard
+    // NOT MAPPED [@bs.optional] randomType - this looks hard
     [@bs.optional]
     seed: int,
     [@bs.optional]
@@ -75,7 +75,7 @@ module Parameters = {
   };
 };
 
-// Convenience for those who don't like calling `assert_`
+// Convenience module for anyone who doesn't like the name `assert_` (assert is a keyword in ReasonML)
 module FcAssert = {
   [@bs.module "fast-check"] external sync: property('a) => unit = "assert";
 
@@ -133,6 +133,7 @@ module MakeSync = (M: {type r;}) => {
     property('a) =
     "property";
 
+  // more convenience methods to avoid dancing around the "assert is a keyword" issue
   let assertProperty1 = (arb, f) => assert_(property1(arb, f));
   let assertProperty2 = (arb1, arb2, f) =>
     assert_(property2(arb1, arb2, f));
@@ -207,6 +208,7 @@ module MakeAsync = (M: {type r;}) => {
     asyncProperty('a) =
     "asyncProperty";
 
+  // more convenience methods to avoid dancing around the "assert is a keyword" issue
   let assertProperty1 = (arb, f) => assert_(property1(arb, f));
   let assertProperty2 = (arb1, arb2, f) =>
     assert_(property2(arb1, arb2, f));
@@ -231,13 +233,14 @@ module Async =
 [@bs.module "fast-check"] external pre: bool => unit = "pre";
 
 /**
- * The void/unit modules have to be manual, because BuckleScript compiles unit as `0`, not `undefined`
+ * The void/unit modules have to be explicit because BuckleScript compiles unit as `0`, not `undefined`
  *
  * The property functions only check for falsy values to trigger the boolean path, so we need to do
- * a bunch of extra work to return undefined
+ * a bunch of extra work to return actual undefined
  *
  * NOTE: the void modules are not exposed. Only the unit wrappers. If BuckleScript changes behaviour,
  * void can be renamed unit (this will make the interface simpler too)
+ * https://github.com/BuckleScript/bucklescript/issues/3953
  */
 type void = Js.undefined(unit);
 module SyncVoid =
