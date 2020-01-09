@@ -222,15 +222,14 @@ external stringOfWithLength:
 
 [@bs.module "fast-check"]
 external date: unit => arbitrary(Js.Date.t) = "date";
+type dateRange = {
+  [@bs.as "min"]
+  dateMin: Js.Date.t,
+  [@bs.as "max"]
+  dateMax: Js.Date.t,
+};
 [@bs.module "fast-check"]
-external dateRange:
-  {
-    .
-    "min": Js.Date.t,
-    "max": Js.Date.t,
-  } =>
-  arbitrary(Js.Date.t) =
-  "date";
+external dateRange: dateRange => arbitrary(Js.Date.t) = "date";
 
 module Objects = {
   // There's no way to express this, so we cheat
@@ -278,7 +277,6 @@ module Objects = {
 };
 
 module Scheduler = {
-  [@bs.deriving abstract]
   type schedulerSequenceItem('a) = {
     builder: unit => Js.Promise.t('a),
     label: string,
@@ -297,19 +295,23 @@ module Scheduler = {
     "scheduleFunction";
   [@bs.send]
   external scheduleFunction2:
-    (schedulerInstance, (. 'a, 'b) => Js.Promise.t('t)) => (. 'a, 'b) => Js.Promise.t('t) =
+    (schedulerInstance, (. 'a, 'b) => Js.Promise.t('t)) =>
+    (. 'a, 'b) => Js.Promise.t('t) =
     "scheduleFunction";
   [@bs.send]
   external scheduleFunction3:
-    (schedulerInstance, (. 'a, 'b, 'c) => Js.Promise.t('t)) => (. 'a, 'b, 'c) => Js.Promise.t('t) =
+    (schedulerInstance, (. 'a, 'b, 'c) => Js.Promise.t('t)) =>
+    (. 'a, 'b, 'c) => Js.Promise.t('t) =
     "scheduleFunction";
   [@bs.send]
   external scheduleFunction4:
-    (schedulerInstance, (. 'a, 'b, 'c, 'd) => Js.Promise.t('t)) => (. 'a, 'b, 'c, 'd) => Js.Promise.t('t) =
+    (schedulerInstance, (. 'a, 'b, 'c, 'd) => Js.Promise.t('t)) =>
+    (. 'a, 'b, 'c, 'd) => Js.Promise.t('t) =
     "scheduleFunction";
   [@bs.send]
   external scheduleFunction5:
-    (schedulerInstance, (. 'a, 'b, 'c, 'd, 'e) => Js.Promise.t('t)) => (. 'a, 'b, 'c, 'd, 'e) => Js.Promise.t('t) =
+    (schedulerInstance, (. 'a, 'b, 'c, 'd, 'e) => Js.Promise.t('t)) =>
+    (. 'a, 'b, 'c, 'd, 'e) => Js.Promise.t('t) =
     "scheduleFunction";
   [@bs.send]
   external waitAll: (schedulerInstance, unit) => Js.Promise.t(unit) =
@@ -318,20 +320,21 @@ module Scheduler = {
   external waitOne: (schedulerInstance, unit) => Js.Promise.t(unit) =
     "waitOne";
 
-
   [@bs.send] external count: (schedulerInstance, unit) => int = "count";
 
-  [@bs.deriving abstract]
+  type scheduledTaskResult = {
+    done_: bool,
+    faulty: bool,
+  };
   type scheduledSequence = {
     done_: bool,
     faulty: bool,
-    task: Js.Promise.t({
-      .
-      "done": bool,
-      "faulty": bool
-    })
+    task: Js.Promise.t(scheduledTaskResult),
   };
-  [@bs.send] external scheduleSequence: (schedulerInstance, array(schedulerSequenceItem('a))) => int = "scheduleSequence";
+  [@bs.send]
+  external scheduleSequence:
+    (schedulerInstance, array(schedulerSequenceItem('a))) => int =
+    "scheduleSequence";
 
   // generated docs include (~constraints: schedulerConstraints=?) but documentation doesn't
   [@bs.module "fast-check"]
