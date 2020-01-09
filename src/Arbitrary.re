@@ -30,7 +30,7 @@ module Types = {
       };
 };
 
-  // Advanced arbitraries, methods on the arbitrary instances to derive new arbitraries
+// Advanced arbitraries, methods on the arbitrary instances to derive new arbitraries
 module Derive = {
   [@bs.send]
   external chain: (arbitrary('a), 'a => arbitrary('b)) => arbitrary('b) =
@@ -275,4 +275,65 @@ module Objects = {
     (((. Js.Dict.key) => arbitrary(any)) => Js.Dict.t(arbitrary(any))) =>
     Js.Dict.t(arbitrary(any)) =
     "letrec";
+};
+
+module Scheduler = {
+  [@bs.deriving abstract]
+  type schedulerSequenceItem('a) = {
+    builder: unit => Js.Promise.t('a),
+    label: string,
+  };
+
+  type schedulerInstance;
+
+  [@bs.send]
+  external schedule:
+    (schedulerInstance, Js.Promise.t('a)) => Js.Promise.t('a) =
+    "schedule";
+  /** Unfortunately returning a function is just currying, so we have to use the uncurried form here */
+  [@bs.send]
+  external scheduleFunction:
+    (schedulerInstance, 'a => Js.Promise.t('t)) => (. 'a) => Js.Promise.t('t) =
+    "scheduleFunction";
+  [@bs.send]
+  external scheduleFunction2:
+    (schedulerInstance, (. 'a, 'b) => Js.Promise.t('t)) => (. 'a, 'b) => Js.Promise.t('t) =
+    "scheduleFunction";
+  [@bs.send]
+  external scheduleFunction3:
+    (schedulerInstance, (. 'a, 'b, 'c) => Js.Promise.t('t)) => (. 'a, 'b, 'c) => Js.Promise.t('t) =
+    "scheduleFunction";
+  [@bs.send]
+  external scheduleFunction4:
+    (schedulerInstance, (. 'a, 'b, 'c, 'd) => Js.Promise.t('t)) => (. 'a, 'b, 'c, 'd) => Js.Promise.t('t) =
+    "scheduleFunction";
+  [@bs.send]
+  external scheduleFunction5:
+    (schedulerInstance, (. 'a, 'b, 'c, 'd, 'e) => Js.Promise.t('t)) => (. 'a, 'b, 'c, 'd, 'e) => Js.Promise.t('t) =
+    "scheduleFunction";
+  [@bs.send]
+  external waitAll: (schedulerInstance, unit) => Js.Promise.t(unit) =
+    "waitAll";
+  [@bs.send]
+  external waitOne: (schedulerInstance, unit) => Js.Promise.t(unit) =
+    "waitOne";
+
+
+  [@bs.send] external count: (schedulerInstance, unit) => int = "count";
+
+  [@bs.deriving abstract]
+  type scheduledSequence = {
+    done_: bool,
+    faulty: bool,
+    task: Js.Promise.t({
+      .
+      "done": bool,
+      "faulty": bool
+    })
+  };
+  [@bs.send] external scheduleSequence: (schedulerInstance, array(schedulerSequenceItem('a))) => int = "scheduleSequence";
+
+  // generated docs include (~constraints: schedulerConstraints=?) but documentation doesn't
+  [@bs.module "fast-check"]
+  external scheduler: unit => arbitrary(schedulerInstance) = "jsonObject";
 };
