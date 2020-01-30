@@ -277,6 +277,17 @@ module Objects = {
     "letrec";
 };
 
+module Context {
+  type t;
+
+  [@bs.module "fast-check"]
+  external context: unit => arbitrary(t) = "context";
+  [@bs.send]
+  external contextLog: (t, string) => unit = "log"
+  [@bs.send]
+  external contextSize: t => int = "size"
+}
+
 module Scheduler = {
   [@bs.deriving abstract]
   type schedulerSequenceItem('a) = {
