@@ -1,6 +1,6 @@
 {
   "name": "bs-fast-check",
-  "version": "0.10.0",
+  "version": "0.1.23",
   "description": "Fast-check bindings for bucklescript",
   "repository": {
     "type": "git",
