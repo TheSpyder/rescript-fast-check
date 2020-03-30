@@ -59,8 +59,8 @@ describe("primitive built-in arbitraries", () => {
     FcAssert.sync(
       property1(
         dateRange({
-          "min": Js.Date.fromFloat(0.),
-          "max": Js.Date.fromFloat(354894654.),
+          dateMin: Js.Date.fromFloat(0.),
+          dateMax: Js.Date.fromFloat(354894654.),
         }),
         eq,
       ),
