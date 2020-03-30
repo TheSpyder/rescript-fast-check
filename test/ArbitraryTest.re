@@ -127,7 +127,13 @@ describe("combinators", () => {
     FcAssert.sync(
       property1(tuple5(hexa(), hexa(), hexa(), hexa(), hexa()), eq),
     );
-    FcAssert.sync(property1(dictionary(hexa(), fullUnicodeString()), eq));
+    FcAssert.sync(
+      property1(
+        dictionary(hexa(), fullUnicodeString())
+        ->Derive.filter(o => Js.Dict.keys(o)->Array.length > 0),
+        eq,
+      ),
+    );
 
     let recordGenerator = Js.Dict.empty();
     Js.Dict.set(recordGenerator, "a", hexaString());
