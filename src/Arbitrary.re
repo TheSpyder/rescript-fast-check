@@ -277,9 +277,9 @@ module Objects = {
     (~settings: settings=?, unit) => arbitrary(Js.Dict.t(any)) =
     "object";
   [@bs.module "fast-check"]
-  external jsonObject: int => arbitrary(Js.Dict.t(Js.Json.t)) = "jsonObject";
+  external jsonObject: int => arbitrary(Js.Json.t) = "jsonObject";
   [@bs.module "fast-check"]
-  external unicodeJsonObject: int => arbitrary(Js.Dict.t(Js.Json.t)) =
+  external unicodeJsonObject: int => arbitrary(Js.Json.t) =
     "unicodeJsonObject";
 
   [@bs.module "fast-check"]
