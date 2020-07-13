@@ -175,8 +175,28 @@ describe("complex built-in arbitraries", () => {
         constTrue,
       ),
     );
+  });
+
+  it("json", () => {
+    // Despite the names, these are really *any* JSON value
     FcAssert.sync(property1(Objects.jsonObject(5), eq));
     FcAssert.sync(property1(Objects.unicodeJsonObject(5), eq));
+    let checkProducesJsonValue = arb => {
+      open Js.Json;
+      let checkProduces = kind =>
+        SyncUnit.property1(arb, v => Property.pre(v->test(kind)))
+        ->SyncUnit.assertParams(
+            Parameters.t(~maxSkipsPerRun=1000, ~numRuns=1, ()),
+          );
+      checkProduces(String);
+      checkProduces(Number);
+      checkProduces(Object);
+      checkProduces(Array);
+      checkProduces(Boolean);
+      checkProduces(Null);
+    };
+    checkProducesJsonValue(Objects.jsonObject(1));
+    checkProducesJsonValue(Objects.unicodeJsonObject(1));
   });
 
   it("letrec", () => {
