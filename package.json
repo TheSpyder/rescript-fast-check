@@ -25,6 +25,6 @@
     "bs-platform": "^7.3.2"
   },
   "dependencies": {
-    "fast-check": "^1.25.1"
+    "fast-check": "^2.1.0"
   }
 }
