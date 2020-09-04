@@ -2,10 +2,10 @@ open BsMocha.Mocha;
 open Arbitrary;
 open Property;
 
-let testParams =
+let testParams1 =
   Parameters.t(
     ~endOnFailure=true,
-    ~examples=[|true|],
+    ~examples=[|[|true|]|],
     ~interruptAfterTimeLimit=999,
     ~logger=s => Js.log(s),
     ~markInterruptAsFailure=true,
@@ -53,12 +53,50 @@ describe("sync property checks", () => {
       property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5),
     );
   });
-  it("sync assert / check params", () => {
-    assertParams(property1(boolean(), eq), testParams);
-
-    check(property1(boolean(), eq))->validateRunDetails;
-
-    checkParams(property1(boolean(), eq), testParams)->validateRunDetails;
+  it("sync assert with params", () => {
+    assertParams(property1(boolean(), eq), testParams1);
+    assertParams(
+      property2(boolean(), boolean(), eq2),
+      Parameters.t(~examples=[|(true, true)|], ()),
+    );
+    assertParams(
+      property3(boolean(), boolean(), boolean(), eq3),
+      Parameters.t(~examples=[|(true, true, true)|], ()),
+    );
+    assertParams(
+      property4(boolean(), boolean(), boolean(), boolean(), eq4),
+      Parameters.t(~examples=[|(true, true, true, true)|], ()),
+    );
+    assertParams(
+      property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5),
+      Parameters.t(~examples=[|(true, true, true, true, true)|], ()),
+    );
+  });
+  it("sync check", () => {
+    check(property1(boolean(), eq))->validateRunDetails
+  });
+  it("sync check with params", () => {
+    checkParams(property1(boolean(), eq), testParams1)->validateRunDetails;
+    checkParams(
+      property2(boolean(), boolean(), eq2),
+      Parameters.t(~examples=[|(true, true)|], ()),
+    )
+    ->validateRunDetails;
+    checkParams(
+      property3(boolean(), boolean(), boolean(), eq3),
+      Parameters.t(~examples=[|(true, true, true)|], ()),
+    )
+    ->validateRunDetails;
+    checkParams(
+      property4(boolean(), boolean(), boolean(), boolean(), eq4),
+      Parameters.t(~examples=[|(true, true, true, true)|], ()),
+    )
+    ->validateRunDetails;
+    checkParams(
+      property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5),
+      Parameters.t(~examples=[|(true, true, true, true, true)|], ()),
+    )
+    ->validateRunDetails;
 
     pre(true);
   });
@@ -105,12 +143,50 @@ describe("syncUnit property checks", () => {
       property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5),
     );
   });
-  it("syncUnit assert / check params", () => {
-    assertParams(property1(boolean(), eq), testParams);
-
-    check(property1(boolean(), eq))->validateRunDetails;
-
-    checkParams(property1(boolean(), eq), testParams)->validateRunDetails;
+  it("syncUnit assert with params", () => {
+    assertParams(property1(boolean(), eq), testParams1);
+    assertParams(
+      property2(boolean(), boolean(), eq2),
+      Parameters.t(~examples=[|(true, true)|], ()),
+    );
+    assertParams(
+      property3(boolean(), boolean(), boolean(), eq3),
+      Parameters.t(~examples=[|(true, true, true)|], ()),
+    );
+    assertParams(
+      property4(boolean(), boolean(), boolean(), boolean(), eq4),
+      Parameters.t(~examples=[|(true, true, true, true)|], ()),
+    );
+    assertParams(
+      property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5),
+      Parameters.t(~examples=[|(true, true, true, true, true)|], ()),
+    );
+  });
+  it("syncUnit check", () => {
+    check(property1(boolean(), eq))->validateRunDetails
+  });
+  it("syncUnit check with params", () => {
+    checkParams(property1(boolean(), eq), testParams1)->validateRunDetails;
+    checkParams(
+      property2(boolean(), boolean(), eq2),
+      Parameters.t(~examples=[|(true, true)|], ()),
+    )
+    ->validateRunDetails;
+    checkParams(
+      property3(boolean(), boolean(), boolean(), eq3),
+      Parameters.t(~examples=[|(true, true, true)|], ()),
+    )
+    ->validateRunDetails;
+    checkParams(
+      property4(boolean(), boolean(), boolean(), boolean(), eq4),
+      Parameters.t(~examples=[|(true, true, true, true)|], ()),
+    )
+    ->validateRunDetails;
+    checkParams(
+      property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5),
+      Parameters.t(~examples=[|(true, true, true, true, true)|], ()),
+    )
+    ->validateRunDetails;
 
     pre(true);
   });
@@ -168,10 +244,34 @@ describe("async property checks", () => {
       property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5),
     )
   );
-  it("async assert / check params 1", () =>
-    assertParams(property1(boolean(), eq), testParams)
+  it("async assert with params 1", () =>
+    assertParams(property1(boolean(), eq), testParams1)
   );
-  it("async assert / check params 2", () => {
+  it("async assert with params 2", () =>
+    assertParams(
+      property2(boolean(), boolean(), eq2),
+      Parameters.t(~examples=[|(true, true)|], ()),
+    )
+  );
+  it("async assert with params 3", () =>
+    assertParams(
+      property3(boolean(), boolean(), boolean(), eq3),
+      Parameters.t(~examples=[|(true, true, true)|], ()),
+    )
+  );
+  it("async assert with params 4", () =>
+    assertParams(
+      property4(boolean(), boolean(), boolean(), boolean(), eq4),
+      Parameters.t(~examples=[|(true, true, true, true)|], ()),
+    )
+  );
+  it("async assert with params 5", () =>
+    assertParams(
+      property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5),
+      Parameters.t(~examples=[|(true, true, true, true, true)|], ()),
+    )
+  );
+  it("async check", () => {
     pre(true);
     check(property1(boolean(), eq))
     |> Js.Promise.then_(checkResult => {
@@ -179,9 +279,53 @@ describe("async property checks", () => {
          Js.Promise.resolve();
        });
   });
-  it("async assert / check params 3", () => {
+  it("async check with params 1", () => {
     pre(true);
-    checkParams(property1(boolean(), eq), testParams)
+    checkParams(property1(boolean(), eq), testParams1)
+    |> Js.Promise.then_(checkResult => {
+         validateRunDetails(checkResult);
+         Js.Promise.resolve();
+       });
+  });
+  it("async check with params 2", () => {
+    pre(true);
+    checkParams(
+      property2(boolean(), boolean(), eq2),
+      Parameters.t(~examples=[|(true, true)|], ()),
+    )
+    |> Js.Promise.then_(checkResult => {
+         validateRunDetails(checkResult);
+         Js.Promise.resolve();
+       });
+  });
+  it("async check with params 3", () => {
+    pre(true);
+    checkParams(
+      property3(boolean(), boolean(), boolean(), eq3),
+      Parameters.t(~examples=[|(true, true, true)|], ()),
+    )
+    |> Js.Promise.then_(checkResult => {
+         validateRunDetails(checkResult);
+         Js.Promise.resolve();
+       });
+  });
+  it("async check with params 4", () => {
+    pre(true);
+    checkParams(
+      property4(boolean(), boolean(), boolean(), boolean(), eq4),
+      Parameters.t(~examples=[|(true, true, true, true)|], ()),
+    )
+    |> Js.Promise.then_(checkResult => {
+         validateRunDetails(checkResult);
+         Js.Promise.resolve();
+       });
+  });
+  it("async check with params 5", () => {
+    pre(true);
+    checkParams(
+      property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5),
+      Parameters.t(~examples=[|(true, true, true, true, true)|], ()),
+    )
     |> Js.Promise.then_(checkResult => {
          validateRunDetails(checkResult);
          Js.Promise.resolve();
@@ -237,74 +381,91 @@ describe("asyncUnit property checks", () => {
   let eq4 = (_, _, _, _) => Js.Promise.resolve();
   let eq5 = (_, _, _, _, _) => Js.Promise.resolve();
   open Property.AsyncUnit;
-  it("async assert_ 1", () =>
+  it("asyncUnit assert_ 1", () =>
     assert_(property1(boolean(), eq))
   );
-  it("async assert_ 2", () =>
+  it("asyncUnit assert_ 2", () =>
     assert_(property2(boolean(), boolean(), eq2))
   );
-  it("async assert_ 3", () =>
+  it("asyncUnit assert_ 3", () =>
     assert_(property3(boolean(), boolean(), boolean(), eq3))
   );
-  it("async assert_ 4", () =>
+  it("asyncUnit assert_ 4", () =>
     assert_(property4(boolean(), boolean(), boolean(), boolean(), eq4))
   );
-  it("async assert_ 5", () =>
+  it("asyncUnit assert_ 5", () =>
     assert_(
       property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5),
     )
   );
-  it("async assert / check params 1", () =>
-    assertParams(property1(boolean(), eq), testParams)
+  it("asyncUnit assert with params 1", () =>
+    assertParams(property1(boolean(), eq), testParams1)
   );
-  it("async assert / check params 2", () => {
+  it("asyncUnit assert with params 2", () =>
+    assertParams(
+      property2(boolean(), boolean(), eq2),
+      Parameters.t(~examples=[|(true, true)|], ()),
+    )
+  );
+  it("asyncUnit check 2", () => {
     pre(true);
-    check(property1(boolean(), eq))
+    check(property2(boolean(), boolean(), eq2))
     |> Js.Promise.then_(checkResult => {
          validateRunDetails(checkResult);
          Js.Promise.resolve();
        });
   });
-  it("async assert / check params 3", () => {
+  it("asyncUnit check with params 1", () => {
     pre(true);
-    checkParams(property1(boolean(), eq), testParams)
+    checkParams(property1(boolean(), eq), testParams1)
     |> Js.Promise.then_(checkResult => {
          validateRunDetails(checkResult);
          Js.Promise.resolve();
        });
   });
-  it("async FcAssert 1", () =>
+  it("asyncUnit check with params 2", () => {
+    pre(true);
+    checkParams(
+      property2(boolean(), boolean(), eq2),
+      Parameters.t(~examples=[|(true, true)|], ()),
+    )
+    |> Js.Promise.then_(checkResult => {
+         validateRunDetails(checkResult);
+         Js.Promise.resolve();
+       });
+  });
+  it("asyncUnit FcAssert 1", () =>
     FcAssert.async(property1(boolean(), eq))
   );
-  it("async FcAssert 2", () =>
+  it("asyncUnit FcAssert 2", () =>
     FcAssert.async(property2(boolean(), boolean(), eq2))
   );
-  it("async FcAssert 3", () =>
+  it("asyncUnit FcAssert 3", () =>
     FcAssert.async(property3(boolean(), boolean(), boolean(), eq3))
   );
-  it("async FcAssert 4", () =>
+  it("asyncUnit FcAssert 4", () =>
     FcAssert.async(
       property4(boolean(), boolean(), boolean(), boolean(), eq4),
     )
   );
-  it("async FcAssert 5", () =>
+  it("asyncUnit FcAssert 5", () =>
     FcAssert.async(
       property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5),
     )
   );
-  it("async assertProperty 1", () =>
+  it("asyncUnit assertProperty 1", () =>
     assertProperty1(boolean(), eq)
   );
-  it("async assertProperty 1", () =>
+  it("asyncUnit assertProperty 1", () =>
     assertProperty2(boolean(), boolean(), eq2)
   );
-  it("async assertProperty 1", () =>
+  it("asyncUnit assertProperty 1", () =>
     assertProperty3(boolean(), boolean(), boolean(), eq3)
   );
-  it("async assertProperty 1", () =>
+  it("asyncUnit assertProperty 1", () =>
     assertProperty4(boolean(), boolean(), boolean(), boolean(), eq4)
   );
-  it("async assertProperty 1", () =>
+  it("asyncUnit assertProperty 1", () =>
     assertProperty5(
       boolean(),
       boolean(),

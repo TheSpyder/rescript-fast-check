@@ -4,7 +4,10 @@
   "refmt": 3,
   "namespace": true,
   "sources": [{
-    "dir": "src"
+    "dir": "src",
+    "public": [
+      "Arbitrary", "Generator", "Global", "Property", "Shrink"
+    ]
   }, {
     "dir": "test",
     "type": "dev"
