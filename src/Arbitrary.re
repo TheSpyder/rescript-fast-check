@@ -195,6 +195,8 @@ external base64: unit => arbitrary(string) = "base64";
 [@bs.module "fast-check"] external ascii: unit => arbitrary(string) = "ascii";
 [@bs.module "fast-check"]
 external fullUnicode: unit => arbitrary(string) = "fullUnicode";
+[@bs.module "fast-check"]
+external unicode: unit => arbitrary(string) = "unicode";
 
 [@bs.module "fast-check"]
 external hexaString: unit => arbitrary(string) = "hexaString";
@@ -224,6 +226,11 @@ external fullUnicodeString: unit => arbitrary(string) = "fullUnicodeString";
 [@bs.module "fast-check"]
 external fullUnicodeStringWithLength: (int, int) => arbitrary(string) =
   "fullUnicodeString";
+[@bs.module "fast-check"]
+external unicodeString: unit => arbitrary(string) = "unicodeString";
+[@bs.module "fast-check"]
+external unicodeStringWithLength: (int, int) => arbitrary(string) =
+  "unicodeString";
 [@bs.module "fast-check"]
 external stringOf: arbitrary(string) => arbitrary(string) = "stringOf";
 [@bs.module "fast-check"]

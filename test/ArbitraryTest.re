@@ -36,6 +36,7 @@ describe("primitive built-in arbitraries", () => {
     FcAssert.sync(property1(base64(), eq));
     FcAssert.sync(property1(ascii(), eq));
     FcAssert.sync(property1(fullUnicode(), eq));
+    FcAssert.sync(property1(unicode(), eq));
   });
 
   it("string", () => {
@@ -51,6 +52,8 @@ describe("primitive built-in arbitraries", () => {
     FcAssert.sync(property1(string16BitsWithLength(0, 5), eq));
     FcAssert.sync(property1(fullUnicodeString(), eq));
     FcAssert.sync(property1(fullUnicodeStringWithLength(0, 5), eq));
+    FcAssert.sync(property1(unicodeString(), eq));
+    FcAssert.sync(property1(unicodeStringWithLength(0, 5), eq));
     FcAssert.sync(property1(stringOf(ascii()), eq));
     FcAssert.sync(property1(stringOfWithLength(ascii(), 0, 5), eq));
   });
