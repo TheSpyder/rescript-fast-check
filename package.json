@@ -32,7 +32,7 @@
     "bs-platform": "^8.3.1"
   },
   "dependencies": {
-    "fast-check": "^2.2.1",
+    "fast-check": "^2.6.0",
     "mocha": "^8.2.0"
   }
 }
