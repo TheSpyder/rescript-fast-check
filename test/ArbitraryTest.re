@@ -1,7 +1,7 @@
 open BsMocha.Mocha;
 open Arbitrary;
-open Property;
 open Property.Sync;
+module FcAssert = Property.FcAssert;
 
 let eq = i => i === i;
 
@@ -61,10 +61,7 @@ describe("primitive built-in arbitraries", () => {
     FcAssert.sync(property1(date(), eq));
     FcAssert.sync(
       property1(
-        dateRange({
-          dateMin: Js.Date.fromFloat(0.),
-          dateMax: Js.Date.fromFloat(354894654.),
-        }),
+        dateRange({dateMin: Js.Date.fromFloat(0.), dateMax: Js.Date.fromFloat(354894654.)}),
         eq,
       ),
     );
@@ -96,40 +93,22 @@ describe("combinators", () => {
       ),
     );
     FcAssert.sync(property1(oneOf([|integer(), nat()|]), eq));
-    FcAssert.sync(
-      property1(oneOf([|hexaString(), asciiString(), base64String()|]), eq),
-    );
+    FcAssert.sync(property1(oneOf([|hexaString(), asciiString(), base64String()|]), eq));
     FcAssert.sync(property1(null(hexa()), eq));
+    FcAssert.sync(property1(subArray([|1, 2, 3, 4, 5, 6, 7, 8, 9, 10|]), eq));
+    FcAssert.sync(property1(subArrayWithLength([|1, 2, 3, 4, 5, 6, 7, 8, 9, 10|], 5, 10), eq));
+    FcAssert.sync(property1(shuffledSubArray([|1, 2, 3, 4, 5, 6, 7, 8, 9, 10|]), eq));
     FcAssert.sync(
-      property1(subArray([|1, 2, 3, 4, 5, 6, 7, 8, 9, 10|]), eq),
-    );
-    FcAssert.sync(
-      property1(
-        subArrayWithLength([|1, 2, 3, 4, 5, 6, 7, 8, 9, 10|], 5, 10),
-        eq,
-      ),
-    );
-    FcAssert.sync(
-      property1(shuffledSubArray([|1, 2, 3, 4, 5, 6, 7, 8, 9, 10|]), eq),
-    );
-    FcAssert.sync(
-      property1(
-        shuffledSubArrayWithLength([|1, 2, 3, 4, 5, 6, 7, 8, 9, 10|], 5, 10),
-        eq,
-      ),
+      property1(shuffledSubArrayWithLength([|1, 2, 3, 4, 5, 6, 7, 8, 9, 10|], 5, 10), eq),
     );
     FcAssert.sync(property1(array(hexa()), eq));
     FcAssert.sync(property1(arrayWithLength(hexa(), 5, 10), eq));
     FcAssert.sync(property1(set(hexa()), eq));
-    FcAssert.sync(
-      property1(setWithLength(hexa(), 5, 10, ~comparator=(===)), eq),
-    );
+    FcAssert.sync(property1(setWithLength(hexa(), 5, 10, ~comparator=(===)), eq));
     FcAssert.sync(property1(tuple2(hexa(), hexa()), eq));
     FcAssert.sync(property1(tuple3(hexa(), hexa(), hexa()), eq));
     FcAssert.sync(property1(tuple4(hexa(), hexa(), hexa(), hexa()), eq));
-    FcAssert.sync(
-      property1(tuple5(hexa(), hexa(), hexa(), hexa(), hexa()), eq),
-    );
+    FcAssert.sync(property1(tuple5(hexa(), hexa(), hexa(), hexa(), hexa()), eq));
     FcAssert.sync(
       property1(
         dictionary(hexa(), fullUnicodeString())
@@ -142,9 +121,7 @@ describe("combinators", () => {
     Js.Dict.set(recordGenerator, "a", hexaString());
     Js.Dict.set(recordGenerator, "b", hexaString());
     Js.Dict.set(recordGenerator, "c", hexaString());
-    FcAssert.sync(
-      property1(record(recordGenerator, ~withDeletedKeys=true), eq),
-    );
+    FcAssert.sync(property1(record(recordGenerator, ~withDeletedKeys=true), eq));
     FcAssert.sync(property1(dedup(hexa(), 5), eq));
   });
 });
@@ -166,17 +143,11 @@ describe("complex built-in arbitraries", () => {
   it("object", () => {
     FcAssert.sync(property1(Objects.anything(), constTrue));
     FcAssert.sync(
-      property1(
-        Objects.anything(~settings=Objects.settings(~maxDepth=5, ()), ()),
-        constTrue,
-      ),
+      property1(Objects.anything(~settings=Objects.settings(~maxDepth=5, ()), ()), constTrue),
     );
     FcAssert.sync(property1(Objects.object_(), constTrue));
     FcAssert.sync(
-      property1(
-        Objects.object_(~settings=Objects.settings(~maxDepth=5, ()), ()),
-        constTrue,
-      ),
+      property1(Objects.object_(~settings=Objects.settings(~maxDepth=5, ()), ()), constTrue),
     );
   });
 
@@ -186,11 +157,10 @@ describe("complex built-in arbitraries", () => {
     FcAssert.sync(property1(Objects.unicodeJsonObject(5), eq));
     let checkProducesJsonValue = arb => {
       open Js.Json;
+      open Property;
       let checkProduces = kind =>
         SyncUnit.property1(arb, v => Property.pre(v->test(kind)))
-        ->SyncUnit.assertParams(
-            Parameters.t(~maxSkipsPerRun=1000, ~numRuns=1, ()),
-          );
+        ->SyncUnit.assertParams(Parameters.t(~maxSkipsPerRun=1000, ~numRuns=1, ()));
       checkProduces(String);
       checkProduces(Number);
       checkProduces(Object);
@@ -204,26 +174,33 @@ describe("complex built-in arbitraries", () => {
 
   it("letrec", () => {
     // example from the docs
+    // https://github.com/dubzzz/fast-check/blob/master/documentation/Arbitraries.md#recursive-structures
+    module Types = {
+      type structure = {
+        tree: arbitrary(Objects.any),
+        node: arbitrary(Js.Dict.t(Objects.any)),
+        leaf: arbitrary(Objects.any),
+      };
+      type node = {
+        left: arbitrary(Objects.any),
+        right: arbitrary(Objects.any),
+      };
+      external structureAsJsDict: structure => Js.Dict.t(arbitrary(Objects.any)) = "%identity";
+      external nodeAsJsDict: node => Js.Dict.t(arbitrary(Objects.any)) = "%identity";
+    };
+    open Types;
     let recursive =
       Objects.letrec(tie => {
-        let types = Js.Dict.empty();
-        Js.Dict.set(
-          types,
-          "tree",
-          Combinators.oneOf([|
-            tie(. "node"),
-            tie(. "tree"),
-            tie(. "leaf"),
-          |])
-          ->Objects.anyArb,
-        );
-        Js.Dict.set(
-          types,
-          "node",
-          Combinators.tuple2(tie(. "tree"), tie(. "tree"))->Objects.anyArb,
-        );
-        Js.Dict.set(types, "leaf", nat()->Objects.anyArb);
-        types;
+        {
+          tree: Combinators.oneOf([|tie(. "node"), tie(. "leaf"), tie(. "leaf")|]),
+          node:
+            Combinators.record(
+              {left: tie(. "tree"), right: tie(. "tree")}->nodeAsJsDict,
+              ~withDeletedKeys=false,
+            ),
+          leaf: nat()->Objects.anyArb,
+        }
+        ->structureAsJsDict
       });
     let tree = Js.Dict.get(recursive, "tree")->Belt.Option.getExn;
     FcAssert.sync(property1(tree, constTrue));

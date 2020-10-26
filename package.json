@@ -12,19 +12,27 @@
     "clean": "bsb -clean-world",
     "build": "bsb -make-world",
     "watch": "bsb -make-world -w",
-    "test": "./node_modules/.bin/mocha test/*.bs.js"
+    "test": "mocha"
   },
   "keywords": [
     "BuckleScript",
     "reason"
   ],
+  "mocha": {
+    "recursive": true,
+    "reporter": "progress",
+    "spec": [
+      "test"
+    ]
+  },
   "author": "Andrew Herron",
   "license": "BSD-3-Clause",
   "devDependencies": {
     "bs-mocha": "^1.0.0",
-    "bs-platform": "^8.2.0"
+    "bs-platform": "^8.3.1"
   },
   "dependencies": {
-    "fast-check": "^2.2.1"
+    "fast-check": "^2.2.1",
+    "mocha": "^8.2.0"
   }
 }
