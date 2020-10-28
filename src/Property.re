@@ -15,64 +15,51 @@ include Intf_Property;
 
    */
 
-[@bs.get] external hasFailed: fcRunDetails('a) => bool = "failed";
+[@get] external hasFailed: fcRunDetails('a) => bool = "failed";
 
 let toResult = r => hasFailed(r) ? Failed(Obj.magic(r)) : Passed;
 
-
 module FcAssert = {
-  [@bs.module "fast-check"] external sync: property('a) => unit = "assert";
+  [@module "fast-check"] external sync: property('a) => unit = "assert";
 
-  [@bs.module "fast-check"]
-  external async: asyncProperty('a) => Js.Promise.t(unit) = "assert";
+  [@module "fast-check"] external async: asyncProperty('a) => Js.Promise.t(unit) = "assert";
 };
 
-[@bs.module "fast-check"] external pre: bool => unit = "pre";
+[@module "fast-check"] external pre: bool => unit = "pre";
 
 module MakeSync = (M: {type r;}) => {
   type r = M.r;
 
-  [@bs.module "fast-check"] external assert_: property('a) => unit = "assert";
-  [@bs.module "fast-check"]
+  [@module "fast-check"] external assert_: property('a) => unit = "assert";
+  [@module "fast-check"]
   external assertParams: (property('a), Parameters.t('a)) => unit = "assert";
-  [@bs.module "fast-check"]
-  external check: property('a) => fcRunDetails('a) = "check";
-  [@bs.module "fast-check"]
-  external checkParams: (property('a), Parameters.t('a)) => fcRunDetails('a) =
-    "check";
+  [@module "fast-check"] external check: property('a) => fcRunDetails('a) = "check";
+  [@module "fast-check"]
+  external checkParams: (property('a), Parameters.t('a)) => fcRunDetails('a) = "check";
 
   /**
    * Property types are always arrays, but you can't do a tuple of one.
    *
    * So property1 just hard codes array('a).
    */
-  [@bs.module "fast-check"]
-  external property1: (arbitrary('a), 'a => r) => property(array('a)) =
-    "property";
+  [@module "fast-check"]
+  external property1: (arbitrary('a), 'a => r) => property(array('a)) = "property";
 
-  [@bs.module "fast-check"]
-  external property2:
-    (arbitrary('a), arbitrary('b), ('a, 'b) => r) => property(('a, 'b)) =
+  [@module "fast-check"]
+  external property2: (arbitrary('a), arbitrary('b), ('a, 'b) => r) => property(('a, 'b)) =
     "property";
-  [@bs.module "fast-check"]
+  [@module "fast-check"]
   external property3:
-    (arbitrary('a), arbitrary('b), arbitrary('c), ('a, 'b, 'c) => r) =>
-    property(('a, 'b, 'c)) =
+    (arbitrary('a), arbitrary('b), arbitrary('c), ('a, 'b, 'c) => r) => property(('a, 'b, 'c)) =
     "property";
 
-  [@bs.module "fast-check"]
+  [@module "fast-check"]
   external property4:
-    (
-      arbitrary('a),
-      arbitrary('b),
-      arbitrary('c),
-      arbitrary('d),
-      ('a, 'b, 'c, 'd) => r
-    ) =>
+    (arbitrary('a), arbitrary('b), arbitrary('c), arbitrary('d), ('a, 'b, 'c, 'd) => r) =>
     property(('a, 'b, 'c, 'd)) =
     "property";
 
-  [@bs.module "fast-check"]
+  [@module "fast-check"]
   external property5:
     (
       arbitrary('a),
@@ -87,10 +74,8 @@ module MakeSync = (M: {type r;}) => {
 
   // more convenience methods to avoid dancing around the "assert is a keyword" issue
   let assertProperty1 = (arb, f) => assert_(property1(arb, f));
-  let assertProperty2 = (arb1, arb2, f) =>
-    assert_(property2(arb1, arb2, f));
-  let assertProperty3 = (arb1, arb2, arb3, f) =>
-    assert_(property3(arb1, arb2, arb3, f));
+  let assertProperty2 = (arb1, arb2, f) => assert_(property2(arb1, arb2, f));
+  let assertProperty3 = (arb1, arb2, arb3, f) => assert_(property3(arb1, arb2, arb3, f));
   let assertProperty4 = (arb1, arb2, arb3, arb4, f) =>
     assert_(property4(arb1, arb2, arb3, arb4, f));
   let assertProperty5 = (arb1, arb2, arb3, arb4, arb5, f) =>
@@ -100,18 +85,13 @@ module MakeSync = (M: {type r;}) => {
 module MakeAsync = (M: {type r;}) => {
   type r = M.r;
 
-  [@bs.module "fast-check"]
-  external assert_: asyncProperty('a) => Js.Promise.t(unit) = "assert";
-  [@bs.module "fast-check"]
-  external assertParams:
-    (asyncProperty('a), Parameters.t('a)) => Js.Promise.t(unit) =
-    "assert";
-  [@bs.module "fast-check"]
-  external check: asyncProperty('a) => Js.Promise.t(fcRunDetails('a)) =
-    "check";
-  [@bs.module "fast-check"]
-  external checkParams:
-    (asyncProperty('a), Parameters.t('a)) => Js.Promise.t(fcRunDetails('a)) =
+  [@module "fast-check"] external assert_: asyncProperty('a) => Js.Promise.t(unit) = "assert";
+  [@module "fast-check"]
+  external assertParams: (asyncProperty('a), Parameters.t('a)) => Js.Promise.t(unit) = "assert";
+  [@module "fast-check"]
+  external check: asyncProperty('a) => Js.Promise.t(fcRunDetails('a)) = "check";
+  [@module "fast-check"]
+  external checkParams: (asyncProperty('a), Parameters.t('a)) => Js.Promise.t(fcRunDetails('a)) =
     "check";
 
   /**
@@ -119,28 +99,21 @@ module MakeAsync = (M: {type r;}) => {
    *
    * So property1 just hard codes array('a).
    */
-  [@bs.module "fast-check"]
-  external property1:
-    (arbitrary('a), 'a => Js.Promise.t(r)) => asyncProperty(array('a)) =
+  [@module "fast-check"]
+  external property1: (arbitrary('a), 'a => Js.Promise.t(r)) => asyncProperty(array('a)) =
     "asyncProperty";
 
-  [@bs.module "fast-check"]
+  [@module "fast-check"]
   external property2:
-    (arbitrary('a), arbitrary('b), ('a, 'b) => Js.Promise.t(r)) =>
-    asyncProperty(('a, 'b)) =
+    (arbitrary('a), arbitrary('b), ('a, 'b) => Js.Promise.t(r)) => asyncProperty(('a, 'b)) =
     "asyncProperty";
-  [@bs.module "fast-check"]
+  [@module "fast-check"]
   external property3:
-    (
-      arbitrary('a),
-      arbitrary('b),
-      arbitrary('c),
-      ('a, 'b, 'c) => Js.Promise.t(r)
-    ) =>
+    (arbitrary('a), arbitrary('b), arbitrary('c), ('a, 'b, 'c) => Js.Promise.t(r)) =>
     asyncProperty(('a, 'b, 'c)) =
     "asyncProperty";
 
-  [@bs.module "fast-check"]
+  [@module "fast-check"]
   external property4:
     (
       arbitrary('a),
@@ -152,7 +125,7 @@ module MakeAsync = (M: {type r;}) => {
     asyncProperty(('a, 'b, 'c, 'd)) =
     "asyncProperty";
 
-  [@bs.module "fast-check"]
+  [@module "fast-check"]
   external property5:
     (
       arbitrary('a),
@@ -167,10 +140,8 @@ module MakeAsync = (M: {type r;}) => {
 
   // more convenience methods to avoid dancing around the "assert is a keyword" issue
   let assertProperty1 = (arb, f) => assert_(property1(arb, f));
-  let assertProperty2 = (arb1, arb2, f) =>
-    assert_(property2(arb1, arb2, f));
-  let assertProperty3 = (arb1, arb2, arb3, f) =>
-    assert_(property3(arb1, arb2, arb3, f));
+  let assertProperty2 = (arb1, arb2, f) => assert_(property2(arb1, arb2, f));
+  let assertProperty3 = (arb1, arb2, arb3, f) => assert_(property3(arb1, arb2, arb3, f));
   let assertProperty4 = (arb1, arb2, arb3, arb4, f) =>
     assert_(property4(arb1, arb2, arb3, arb4, f));
   let assertProperty5 = (arb1, arb2, arb3, arb4, arb5, f) =>

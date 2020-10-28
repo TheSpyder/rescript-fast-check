@@ -10,11 +10,11 @@
 /*
 
 
- [@bs.module "fast-check"]
+ [@module "fast-check"]
  external sampleArb:
    (~arb: Arbitrary.arbitrary('a), ~genSize: int=?, unit) => array('a) =
    "sample";
- [@bs.module "fast-check"]
+ [@module "fast-check"]
  external sampleProperty:
    (~arb: Property.property('a), ~genSize: int=?, unit) => array('a) =
    "sample";
