@@ -1,7 +1,7 @@
 {
-  "name": "bs-fast-check",
-  "version": "0.1.23",
-  "description": "Fast-check bindings for bucklescript",
+  "name": "rescript-fast-check",
+  "version": "1.0.0",
+  "description": "Fast-check bindings for ReScript",
   "repository": {
     "type": "git",
     "url": "git://github.com/TheSpyder/bs-fast-check.git"
@@ -16,7 +16,9 @@
   },
   "keywords": [
     "BuckleScript",
-    "reason"
+    "ReScript",
+    "Reason",
+    "ReasonML  "
   ],
   "mocha": {
     "recursive": true,
