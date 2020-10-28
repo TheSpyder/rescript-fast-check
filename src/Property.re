@@ -72,6 +72,9 @@ module MakeSync = (M: {type r;}) => {
     property(('a, 'b, 'c, 'd, 'e)) =
     "property";
 
+  [@send] external beforeEach: (property('a), unit => unit) => property('a) = "beforeEach";
+  [@send] external afterEach: (property('a), unit => unit) => property('a) = "afterEach";
+
   // more convenience methods to avoid dancing around the "assert is a keyword" issue
   let assertProperty1 = (arb, f) => assert_(property1(arb, f));
   let assertProperty2 = (arb1, arb2, f) => assert_(property2(arb1, arb2, f));
@@ -137,6 +140,11 @@ module MakeAsync = (M: {type r;}) => {
     ) =>
     asyncProperty(('a, 'b, 'c, 'd, 'e)) =
     "asyncProperty";
+
+  [@send]
+  external beforeEach: (asyncProperty('a), unit => unit) => asyncProperty('a) = "beforeEach";
+  [@send]
+  external afterEach: (asyncProperty('a), unit => unit) => asyncProperty('a) = "afterEach";
 
   // more convenience methods to avoid dancing around the "assert is a keyword" issue
   let assertProperty1 = (arb, f) => assert_(property1(arb, f));

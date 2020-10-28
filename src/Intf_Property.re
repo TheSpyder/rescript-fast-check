@@ -105,6 +105,9 @@ module type Sync = {
     property(('a, 'b, 'c, 'd, 'e)) =
     "property";
 
+  [@send] external beforeEach: (property('a), unit => unit) => property('a) = "beforeEach";
+  [@send] external afterEach: (property('a), unit => unit) => property('a) = "afterEach";
+
   // Convenience combining `assert` and `property` into a single function call
   let assertProperty1: (arbitrary('a), 'a => r) => unit;
   let assertProperty2: (arbitrary('a), arbitrary('b), ('a, 'b) => r) => unit;
@@ -178,6 +181,11 @@ module type Async = {
     ) =>
     asyncProperty(('a, 'b, 'c, 'd, 'e)) =
     "asyncProperty";
+
+  [@send]
+  external beforeEach: (asyncProperty('a), unit => unit) => asyncProperty('a) = "beforeEach";
+  [@send]
+  external afterEach: (asyncProperty('a), unit => unit) => asyncProperty('a) = "afterEach";
 
   // Convenience combining `assert` and `property` into a single function call
   let assertProperty1: (arbitrary('a), 'a => Js.Promise.t(r)) => Js.Promise.t(unit);

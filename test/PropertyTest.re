@@ -41,17 +41,14 @@ describe("sync property checks", () => {
   let eq2 = (i, j) => i === i && j === j;
   let eq3 = (i, j, k) => i === i && j === j && k === k;
   let eq4 = (i, j, k, l) => i === i && j === j && k === k && l === l;
-  let eq5 = (i, j, k, l, m) =>
-    i === i && j === j && k === k && l === l && m === m;
+  let eq5 = (i, j, k, l, m) => i === i && j === j && k === k && l === l && m === m;
   open Property.Sync;
   it("sync assert_", () => {
     assert_(property1(boolean(), eq));
     assert_(property2(boolean(), boolean(), eq2));
     assert_(property3(boolean(), boolean(), boolean(), eq3));
     assert_(property4(boolean(), boolean(), boolean(), boolean(), eq4));
-    assert_(
-      property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5),
-    );
+    assert_(property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5));
   });
   it("sync assert with params", () => {
     assertParams(property1(boolean(), eq), testParams1);
@@ -104,26 +101,21 @@ describe("sync property checks", () => {
     FcAssert.sync(property1(boolean(), eq));
     FcAssert.sync(property2(boolean(), boolean(), eq2));
     FcAssert.sync(property3(boolean(), boolean(), boolean(), eq3));
-    FcAssert.sync(
-      property4(boolean(), boolean(), boolean(), boolean(), eq4),
-    );
-    FcAssert.sync(
-      property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5),
-    );
+    FcAssert.sync(property4(boolean(), boolean(), boolean(), boolean(), eq4));
+    FcAssert.sync(property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5));
   });
   it("sync assertProperty", () => {
     assertProperty1(boolean(), eq);
     assertProperty2(boolean(), boolean(), eq2);
     assertProperty3(boolean(), boolean(), boolean(), eq3);
     assertProperty4(boolean(), boolean(), boolean(), boolean(), eq4);
-    assertProperty5(
-      boolean(),
-      boolean(),
-      boolean(),
-      boolean(),
-      boolean(),
-      eq5,
-    );
+    assertProperty5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5);
+  });
+  it("sync beforeEach", () => {
+    assertParams(property1(boolean(), eq)->beforeEach(_ => ()), testParams1)
+  });
+  it("sync afterEach", () => {
+    assertParams(property1(boolean(), eq)->afterEach(_ => ()), testParams1)
   });
 });
 
@@ -139,9 +131,7 @@ describe("syncUnit property checks", () => {
     assert_(property2(boolean(), boolean(), eq2));
     assert_(property3(boolean(), boolean(), boolean(), eq3));
     assert_(property4(boolean(), boolean(), boolean(), boolean(), eq4));
-    assert_(
-      property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5),
-    );
+    assert_(property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5));
   });
   it("syncUnit assert with params", () => {
     assertParams(property1(boolean(), eq), testParams1);
@@ -194,26 +184,21 @@ describe("syncUnit property checks", () => {
     FcAssert.sync(property1(boolean(), eq));
     FcAssert.sync(property2(boolean(), boolean(), eq2));
     FcAssert.sync(property3(boolean(), boolean(), boolean(), eq3));
-    FcAssert.sync(
-      property4(boolean(), boolean(), boolean(), boolean(), eq4),
-    );
-    FcAssert.sync(
-      property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5),
-    );
+    FcAssert.sync(property4(boolean(), boolean(), boolean(), boolean(), eq4));
+    FcAssert.sync(property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5));
   });
   it("syncUnit assertProperty", () => {
     assertProperty1(boolean(), eq);
     assertProperty2(boolean(), boolean(), eq2);
     assertProperty3(boolean(), boolean(), boolean(), eq3);
     assertProperty4(boolean(), boolean(), boolean(), boolean(), eq4);
-    assertProperty5(
-      boolean(),
-      boolean(),
-      boolean(),
-      boolean(),
-      boolean(),
-      eq5,
-    );
+    assertProperty5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5);
+  });
+  it("syncUnit beforeEach", () => {
+    assertParams(property1(boolean(), eq)->beforeEach(_ => ()), testParams1)
+  });
+  it("syncUnit afterEach", () => {
+    assertParams(property1(boolean(), eq)->afterEach(_ => ()), testParams1)
   });
 });
 
@@ -222,8 +207,7 @@ describe("async property checks", () => {
   let eq = i => Js.Promise.resolve(i === i);
   let eq2 = (i, j) => Js.Promise.resolve(i === i && j === j);
   let eq3 = (i, j, k) => Js.Promise.resolve(i === i && j === j && k === k);
-  let eq4 = (i, j, k, l) =>
-    Js.Promise.resolve(i === i && j === j && k === k && l === l);
+  let eq4 = (i, j, k, l) => Js.Promise.resolve(i === i && j === j && k === k && l === l);
   let eq5 = (i, j, k, l, m) =>
     Js.Promise.resolve(i === i && j === j && k === k && l === l && m === m);
   open Property.Async;
@@ -240,9 +224,7 @@ describe("async property checks", () => {
     assert_(property4(boolean(), boolean(), boolean(), boolean(), eq4))
   );
   it("async assert_ 5", () =>
-    assert_(
-      property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5),
-    )
+    assert_(property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5))
   );
   it("async assert with params 1", () =>
     assertParams(property1(boolean(), eq), testParams1)
@@ -341,37 +323,32 @@ describe("async property checks", () => {
     FcAssert.async(property3(boolean(), boolean(), boolean(), eq3))
   );
   it("async FcAssert 4", () =>
-    FcAssert.async(
-      property4(boolean(), boolean(), boolean(), boolean(), eq4),
-    )
+    FcAssert.async(property4(boolean(), boolean(), boolean(), boolean(), eq4))
   );
   it("async FcAssert 5", () =>
-    FcAssert.async(
-      property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5),
-    )
+    FcAssert.async(property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5))
   );
   it("async assertProperty 1", () =>
     assertProperty1(boolean(), eq)
   );
-  it("async assertProperty 1", () =>
+  it("async assertProperty 2", () =>
     assertProperty2(boolean(), boolean(), eq2)
   );
-  it("async assertProperty 1", () =>
+  it("async assertProperty 3", () =>
     assertProperty3(boolean(), boolean(), boolean(), eq3)
   );
-  it("async assertProperty 1", () =>
+  it("async assertProperty 4", () =>
     assertProperty4(boolean(), boolean(), boolean(), boolean(), eq4)
   );
-  it("async assertProperty 1", () =>
-    assertProperty5(
-      boolean(),
-      boolean(),
-      boolean(),
-      boolean(),
-      boolean(),
-      eq5,
-    )
+  it("async assertProperty 5", () =>
+    assertProperty5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5)
   );
+  it("async beforeEach", () => {
+    assertParams(property1(boolean(), eq)->beforeEach(_ => ()), testParams1)
+  });
+  it("async afterEach", () => {
+    assertParams(property1(boolean(), eq)->afterEach(_ => ()), testParams1)
+  });
 });
 
 describe("asyncUnit property checks", () => {
@@ -394,9 +371,7 @@ describe("asyncUnit property checks", () => {
     assert_(property4(boolean(), boolean(), boolean(), boolean(), eq4))
   );
   it("asyncUnit assert_ 5", () =>
-    assert_(
-      property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5),
-    )
+    assert_(property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5))
   );
   it("asyncUnit assert with params 1", () =>
     assertParams(property1(boolean(), eq), testParams1)
@@ -444,35 +419,30 @@ describe("asyncUnit property checks", () => {
     FcAssert.async(property3(boolean(), boolean(), boolean(), eq3))
   );
   it("asyncUnit FcAssert 4", () =>
-    FcAssert.async(
-      property4(boolean(), boolean(), boolean(), boolean(), eq4),
-    )
+    FcAssert.async(property4(boolean(), boolean(), boolean(), boolean(), eq4))
   );
   it("asyncUnit FcAssert 5", () =>
-    FcAssert.async(
-      property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5),
-    )
+    FcAssert.async(property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5))
   );
   it("asyncUnit assertProperty 1", () =>
     assertProperty1(boolean(), eq)
   );
-  it("asyncUnit assertProperty 1", () =>
+  it("asyncUnit assertProperty 2", () =>
     assertProperty2(boolean(), boolean(), eq2)
   );
-  it("asyncUnit assertProperty 1", () =>
+  it("asyncUnit assertProperty 2", () =>
     assertProperty3(boolean(), boolean(), boolean(), eq3)
   );
-  it("asyncUnit assertProperty 1", () =>
+  it("asyncUnit assertProperty 2", () =>
     assertProperty4(boolean(), boolean(), boolean(), boolean(), eq4)
   );
-  it("asyncUnit assertProperty 1", () =>
-    assertProperty5(
-      boolean(),
-      boolean(),
-      boolean(),
-      boolean(),
-      boolean(),
-      eq5,
-    )
+  it("asyncUnit assertProperty 2", () =>
+    assertProperty5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5)
   );
+  it("asyncUnit beforeEach", () => {
+    assertParams(property1(boolean(), eq)->beforeEach(_ => ()), testParams1)
+  });
+  it("asyncUnit afterEach", () => {
+    assertParams(property1(boolean(), eq)->afterEach(_ => ()), testParams1)
+  });
 });
