@@ -1,13 +1,13 @@
 {
   "name": "rescript-fast-check",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Fast-check bindings for ReScript",
   "repository": {
     "type": "git",
-    "url": "git://github.com/TheSpyder/bs-fast-check.git"
+    "url": "git://github.com/TheSpyder/rescript-fast-check.git"
   },
-  "homepage": "https://github.com/TheSpyder/bs-fast-check",
-  "bugs": "https://github.com/TheSpyder/bs-fast-check/issues",
+  "homepage": "https://github.com/TheSpyder/rescript-fast-check",
+  "bugs": "https://github.com/TheSpyder/rescript-fast-check/issues",
   "scripts": {
     "clean": "bsb -clean-world",
     "build": "bsb -make-world",
