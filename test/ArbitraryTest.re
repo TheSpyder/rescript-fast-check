@@ -121,7 +121,8 @@ describe("combinators", () => {
     Js.Dict.set(recordGenerator, "a", hexaString());
     Js.Dict.set(recordGenerator, "b", hexaString());
     Js.Dict.set(recordGenerator, "c", hexaString());
-    FcAssert.sync(property1(record(recordGenerator, ~withDeletedKeys=true), eq));
+    FcAssert.sync(property1(record(recordGenerator), eq));
+    FcAssert.sync(property1(recordWithDeletedKeys(recordGenerator), eq));
     FcAssert.sync(property1(dedup(hexa(), 5), eq));
   });
 });
@@ -193,11 +194,7 @@ describe("complex built-in arbitraries", () => {
       Objects.letrec(tie => {
         {
           tree: Combinators.oneOf([|tie(. "node"), tie(. "leaf"), tie(. "leaf")|]),
-          node:
-            Combinators.record(
-              {left: tie(. "tree"), right: tie(. "tree")}->nodeAsJsDict,
-              ~withDeletedKeys=false,
-            ),
+          node: Combinators.record({left: tie(. "tree"), right: tie(. "tree")}->nodeAsJsDict),
           leaf: nat()->Objects.anyArb,
         }
         ->structureAsJsDict

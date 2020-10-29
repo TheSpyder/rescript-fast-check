@@ -82,11 +82,7 @@ module Combinators = {
   [@module "fast-check"]
   external dictionary: (arbitrary(string), arbitrary('a)) => arbitrary(Js.Dict.t('a)) =
     "dictionary";
-  [@module "fast-check"]
-  external record:
-    (Js.Dict.t(arbitrary('a)), {. "withDeletedKeys": bool}) => arbitrary(Js.Dict.t('a)) =
-    "record";
-  // shadow for ease of use
+
   /**
    * `fc.record<T>(recordModel: {[Key:string]: Arbitrary<T>}): Arbitrary<{[Key:string]: T}>`
    *
@@ -94,7 +90,14 @@ module Combinators = {
    * It comes very useful when dealing with settings.
    * The setting `withDeletedKeys=true` instructs the record generator that it can omit some keys.
    */
-  let record = (arb, ~withDeletedKeys) => record(arb, {"withDeletedKeys": withDeletedKeys});
+  [@module "fast-check"]
+  external record: Js.Dict.t(arbitrary('a)) => arbitrary(Js.Dict.t('a)) = "record";
+  [@module "fast-check"]
+  external recordWithDeletedKeys:
+    (Js.Dict.t(arbitrary('a)), {. "withDeletedKeys": bool}) => arbitrary(Js.Dict.t('a)) =
+    "record";
+  // shadow for ease of use
+  let recordWithDeletedKeys = arb => recordWithDeletedKeys(arb, {"withDeletedKeys": true});
   /** generates "tuples" but we can't really express that in the type system */
   [@module "fast-check"]
   external dedup: (arbitrary('a), int) => arbitrary(array('a)) = "dedup";
@@ -102,8 +105,8 @@ module Combinators = {
   // custom and renamed combinators
   [@module "fast-check"] external null: arbitrary('a) => arbitrary(Js.null('a)) = "option";
   /**
-   * In fast-check `option` means null. In these bindings, that has been renamed to `null`
-   * and this function returns an option.
+   * In fast-check `option` uses null. In these bindings, that has been renamed to `null`
+   * and this function maps it to the option type.
    */
   let option: arbitrary('a) => arbitrary(option('a)) =
     arb => Derive.map(null(arb), Js.Null.toOption);
