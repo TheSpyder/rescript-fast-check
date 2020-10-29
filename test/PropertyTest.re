@@ -20,20 +20,28 @@ let testParams1 =
     (),
   );
 
-let validateRunDetails = cr =>
+let validateRunDetails = cr => {
+  let assertNotNull = v =>
+    // magic in, magic out
+    switch (v->Obj.magic->Js.Nullable.toOption) {
+    | Some(_) => ()
+    | None => Js.Exn.raiseError("value was null")
+    };
   switch (toResult(cr)) {
   | Passed => ()
   | Failed(r) =>
-    let _ = r##counterexample;
-    let _ = r##counterexamplePath;
-    let _ = r##error;
-    let _ = r##failures;
-    let _ = r##numRuns;
-    let _ = r##numShrinks;
-    let _ = r##numSkips;
-    let _ = r##seed;
+    r.counterexample->assertNotNull;
+    r.counterexamplePath->assertNotNull;
+    r.error->assertNotNull;
+    r.failures->assertNotNull;
+    r.numRuns->assertNotNull;
+    r.numShrinks->assertNotNull;
+    r.numSkips->assertNotNull;
+    r.seed->assertNotNull;
+    r.runConfiguration->assertNotNull;
     ();
   };
+};
 
 // TODO: make each test do a simple verification that the arbitrary API calls have mapped correctly
 describe("sync property checks", () => {
@@ -69,8 +77,11 @@ describe("sync property checks", () => {
       Parameters.t(~examples=[|(true, true, true, true, true)|], ()),
     );
   });
-  it("sync check", () => {
+  it("sync check pass", () => {
     check(property1(boolean(), eq))->validateRunDetails
+  });
+  it("sync check fail", () => {
+    check(property1(boolean(), _ => false))->validateRunDetails
   });
   it("sync check with params", () => {
     checkParams(property1(boolean(), eq), testParams1)->validateRunDetails;
@@ -253,7 +264,7 @@ describe("async property checks", () => {
       Parameters.t(~examples=[|(true, true, true, true, true)|], ()),
     )
   );
-  it("async check", () => {
+  it("async check pass", () => {
     pre(true);
     check(property1(boolean(), eq))
     |> Js.Promise.then_(checkResult => {
@@ -261,16 +272,21 @@ describe("async property checks", () => {
          Js.Promise.resolve();
        });
   });
+  it("async check fail", () => {
+    check(property1(boolean(), _ => Js.Promise.resolve(false)))
+    |> Js.Promise.then_(checkResult => {
+         validateRunDetails(checkResult);
+         Js.Promise.resolve();
+       })
+  });
   it("async check with params 1", () => {
-    pre(true);
     checkParams(property1(boolean(), eq), testParams1)
     |> Js.Promise.then_(checkResult => {
          validateRunDetails(checkResult);
          Js.Promise.resolve();
-       });
+       })
   });
   it("async check with params 2", () => {
-    pre(true);
     checkParams(
       property2(boolean(), boolean(), eq2),
       Parameters.t(~examples=[|(true, true)|], ()),
@@ -278,10 +294,9 @@ describe("async property checks", () => {
     |> Js.Promise.then_(checkResult => {
          validateRunDetails(checkResult);
          Js.Promise.resolve();
-       });
+       })
   });
   it("async check with params 3", () => {
-    pre(true);
     checkParams(
       property3(boolean(), boolean(), boolean(), eq3),
       Parameters.t(~examples=[|(true, true, true)|], ()),
@@ -289,10 +304,9 @@ describe("async property checks", () => {
     |> Js.Promise.then_(checkResult => {
          validateRunDetails(checkResult);
          Js.Promise.resolve();
-       });
+       })
   });
   it("async check with params 4", () => {
-    pre(true);
     checkParams(
       property4(boolean(), boolean(), boolean(), boolean(), eq4),
       Parameters.t(~examples=[|(true, true, true, true)|], ()),
@@ -300,10 +314,9 @@ describe("async property checks", () => {
     |> Js.Promise.then_(checkResult => {
          validateRunDetails(checkResult);
          Js.Promise.resolve();
-       });
+       })
   });
   it("async check with params 5", () => {
-    pre(true);
     checkParams(
       property5(boolean(), boolean(), boolean(), boolean(), boolean(), eq5),
       Parameters.t(~examples=[|(true, true, true, true, true)|], ()),
@@ -311,7 +324,7 @@ describe("async property checks", () => {
     |> Js.Promise.then_(checkResult => {
          validateRunDetails(checkResult);
          Js.Promise.resolve();
-       });
+       })
   });
   it("async FcAssert 1", () =>
     FcAssert.async(property1(boolean(), eq))
@@ -383,12 +396,11 @@ describe("asyncUnit property checks", () => {
     )
   );
   it("asyncUnit check 2", () => {
-    pre(true);
     check(property2(boolean(), boolean(), eq2))
     |> Js.Promise.then_(checkResult => {
          validateRunDetails(checkResult);
          Js.Promise.resolve();
-       });
+       })
   });
   it("asyncUnit check with params 1", () => {
     pre(true);
@@ -399,7 +411,6 @@ describe("asyncUnit property checks", () => {
        });
   });
   it("asyncUnit check with params 2", () => {
-    pre(true);
     checkParams(
       property2(boolean(), boolean(), eq2),
       Parameters.t(~examples=[|(true, true)|], ()),
@@ -407,7 +418,7 @@ describe("asyncUnit property checks", () => {
     |> Js.Promise.then_(checkResult => {
          validateRunDetails(checkResult);
          Js.Promise.resolve();
-       });
+       })
   });
   it("asyncUnit FcAssert 1", () =>
     FcAssert.async(property1(boolean(), eq))

@@ -15,9 +15,8 @@ module FcAssert: {
 
 [@module "fast-check"] external pre: bool => unit = "pre";
 
-// Do these first to avoid weird results from shadowing
-module SyncUnit: Sync with type r = unit;
-module AsyncUnit: Async with type r = unit;
+module SyncUnit: Sync with type predicateReturn := unit;
+module AsyncUnit: Async with type predicateReturn := unit;
 
-module Sync: Sync with type r = bool;
-module Async: Async with type r = bool;
+module Sync: Sync with type predicateReturn := bool;
+module Async: Async with type predicateReturn := bool;
