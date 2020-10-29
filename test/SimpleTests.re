@@ -1,13 +1,12 @@
 /*
- This replicates some tests from bs-jsverify:
- https://github.com/Risto-Stevcev/bs-jsverify/blob/master/test/Test_Verify.re
+  This replicates some tests from bs-jsverify:
+  https://github.com/Risto-Stevcev/bs-jsverify/blob/master/test/Test_Verify.re
 
- (at least as many as we're able to given it hasn't all been replicated in these bindings)
-*/
+  (at least as many as we're able to given it hasn't all been replicated in these bindings)
+ */
 
 open BsMocha.Mocha;
 open Arbitrary;
-// open Property;
 open Property.Sync;
 open Combinators;
 
@@ -15,9 +14,7 @@ describe("Various simple tests", () => {
   // boolean test case is optimised by the compiler and pointless
 
   it("nat `+` (associative)", () =>
-    assertProperty3(nat(), nat(), nat(), (n1, n2, n3) =>
-      n1 + n2 + n3 == n1 + (n2 + n3)
-    )
+    assertProperty3(nat(), nat(), nat(), (n1, n2, n3) => n1 + n2 + n3 == n1 + (n2 + n3))
   );
 
   it("null(nat)", () =>
@@ -41,13 +38,9 @@ describe("Various simple tests", () => {
   it("sum of nats is >= 0", () => {
     // clearly jsverify doesn't generate natural numbers close to the maximum JS supports
     // fast-check does so we need to limit it
-    assertProperty1(array(nat(~max=200, ())), (a) => {
-      Array.fold_left((+), 0, a) >= 0
-    });
+    assertProperty1(array(nat(~max=200, ())), a => {Array.fold_left((+), 0, a) >= 0});
 
-    assertProperty1(list(nat(~max=200, ())), (l) => {
-      List.fold_left((+), 0, l) >= 0
-    })
+    assertProperty1(list(nat(~max=200, ())), l => {List.fold_left((+), 0, l) >= 0});
   });
 
   it("testing tuple", () => {
