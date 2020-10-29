@@ -1,6 +1,3 @@
-/*
- * Don't use this module, BuckleScript just doesn't let me hide it when using namespaces
- */
 type arbitrary('a) = Arbitrary.arbitrary('a);
 
 type property('a);
