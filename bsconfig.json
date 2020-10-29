@@ -7,10 +7,7 @@
       "dir": "src",
       "public": [
         "Arbitrary",
-        "Generator",
-        "Global",
-        "Property",
-        "Shrink"
+        "Property"
       ]
     },
     {
