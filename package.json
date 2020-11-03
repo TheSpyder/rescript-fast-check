@@ -1,6 +1,6 @@
 {
   "name": "rescript-fast-check",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Fast-check bindings for ReScript",
   "repository": {
     "type": "git",
@@ -31,10 +31,10 @@
   "license": "BSD-3-Clause",
   "devDependencies": {
     "bs-mocha": "^1.0.0",
-    "bs-platform": "^8.3.1"
+    "bs-platform": "^8.3.1",
+    "mocha": "^8.2.0"
   },
   "dependencies": {
-    "fast-check": "^2.6.0",
-    "mocha": "^8.2.0"
+    "fast-check": "^2.6.0"
   }
 }
