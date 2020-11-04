@@ -56,7 +56,7 @@ type runDetails('a) =
   | Failed(fcFailureDetails('a));
 
 module type CommonMethods = {
-  type pReturn;
+  type predicateReturn;
   type propertyType('a);
   type assertReturn;
   type checkReturn('a);
@@ -69,17 +69,19 @@ module type CommonMethods = {
   external checkParams: (propertyType('a), Parameters.t('a)) => checkReturn('a) = "check";
 
   // Convenience combining `assert` and `property` into a single function call
-  let assertProperty1: (arbitrary('a), 'a => pReturn) => assertReturn;
-  let assertProperty2: (arbitrary('a), arbitrary('b), ('a, 'b) => pReturn) => assertReturn;
+  let assertProperty1: (arbitrary('a), 'a => predicateReturn) => assertReturn;
+  let assertProperty2:
+    (arbitrary('a), arbitrary('b), ('a, 'b) => predicateReturn) => assertReturn;
   let assertProperty3:
-    (arbitrary('a), arbitrary('b), arbitrary('c), ('a, 'b, 'c) => pReturn) => assertReturn;
+    (arbitrary('a), arbitrary('b), arbitrary('c), ('a, 'b, 'c) => predicateReturn) =>
+    assertReturn;
   let assertProperty4:
     (
       arbitrary('a),
       arbitrary('b),
       arbitrary('c),
       arbitrary('d),
-      ('a, 'b, 'c, 'd) => pReturn
+      ('a, 'b, 'c, 'd) => predicateReturn
     ) =>
     assertReturn;
   let assertProperty5:
@@ -89,7 +91,7 @@ module type CommonMethods = {
       arbitrary('c),
       arbitrary('d),
       arbitrary('e),
-      ('a, 'b, 'c, 'd, 'e) => pReturn
+      ('a, 'b, 'c, 'd, 'e) => predicateReturn
     ) =>
     assertReturn;
 };
@@ -100,15 +102,16 @@ module type Sync = {
 
   include
     CommonMethods with
-      type pReturn := predicateReturn and
+      type predicateReturn := predicateReturn and
       type propertyType('a) := property('a) and
       type assertReturn := unit and
       type checkReturn('a) := fcRunDetails('a);
 
   /**
-   * Property types are always arrays, but you can't have a tuple of one.
+   * Fast-check _requires_ an array, but you can't have a tuple of one.
    *
-   * So property1 just hard codes array('a).
+   * So property1 must hard codes array('a) and it needs to be manually managed.
+   * This isn't usually a problem, but does come up when using the `examples` property of assertParams.
    */
   [@module "fast-check"]
   external property1: (arbitrary('a), 'a => predicateReturn) => property(array('a)) =
@@ -158,15 +161,16 @@ module type Async = {
 
   include
     CommonMethods with
-      type pReturn := Js.Promise.t(predicateReturn) and
+      type predicateReturn := Js.Promise.t(predicateReturn) and
       type propertyType('a) := asyncProperty('a) and
       type assertReturn := Js.Promise.t(unit) and
       type checkReturn('a) := Js.Promise.t(fcRunDetails('a));
 
   /**
-   * Property types are always arrays, but you can't do a tuple of one.
+   * Fast-check _requires_ an array, but you can't have a tuple of one.
    *
-   * So property1 just hard codes array('a).
+   * So property1 must hard codes array('a) and it needs to be manually managed.
+   * This isn't usually a problem, but does come up when using the `examples` property of assertParams.
    */
   [@module "fast-check"]
   external property1:
