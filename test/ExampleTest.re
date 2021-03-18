@@ -17,7 +17,11 @@ describe("properties", () => {
   });
   // string a + b + c always contains b, whatever the values of a, b and c
   it("should always contain its substrings", () => {
-    assert_(property3(string(), string(), string(), (a, b, c) => {contains(a ++ b ++ c, b)}))
+    assert_(
+      property3(string(), string(), string(), (a, b, c) => {
+        contains(a ++ b ++ c, b)
+      }),
+    )
   });
 });
 
@@ -27,6 +31,8 @@ describe("properties using rescript-fast-check shorthand", () => {
     assertProperty1(string(), text => contains(text, text))
   });
   it("should always contain its substrings", () => {
-    assertProperty3(string(), string(), string(), (a, b, c) => {contains(a ++ b ++ c, b)})
+    assertProperty3(string(), string(), string(), (a, b, c) => {
+      contains(a ++ b ++ c, b)
+    })
   });
 });
