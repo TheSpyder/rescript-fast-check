@@ -28,3 +28,8 @@ lib/bs
 node_modules
 lib
 *.bs.js
+_esy
+_build
+.melange.eobjs
+dune.bsb
+dune

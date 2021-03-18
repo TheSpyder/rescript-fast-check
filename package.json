@@ -9,9 +9,9 @@
   "homepage": "https://github.com/TheSpyder/rescript-fast-check",
   "bugs": "https://github.com/TheSpyder/rescript-fast-check/issues",
   "scripts": {
-    "clean": "bsb -clean-world",
-    "build": "bsb -make-world",
-    "watch": "bsb -make-world -w",
+    "clean": "esy bsb -clean-world",
+    "build": "esy",
+    "watch": "watchexec -i re esy -- -q",
     "test": "mocha"
   },
   "keywords": [
@@ -31,8 +31,7 @@
   "license": "BSD-3-Clause",
   "devDependencies": {
     "bs-mocha": "^1.0.0",
-    "bs-platform": "^9.0.1",
-    "mocha": "^8.3.1"
+    "mocha": "^8.2.0"
   },
   "dependencies": {
     "fast-check": "^2.13.0"
