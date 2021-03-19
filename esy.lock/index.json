@@ -1,5 +1,5 @@
 {
-  "checksum": "2630bf516dc49f452fc91011c13492de",
+  "checksum": "83f5a9c58f55786f3316c230713467c5",
   "root": "rescript-fast-check@link-dev:./esy.json",
   "node": {
     "rescript-fast-check@link-dev:./esy.json": {
@@ -9,8 +9,9 @@
       "source": { "type": "link-dev", "path": ".", "manifest": "esy.json" },
       "overrides": [],
       "dependencies": [
-        "bs-platform@github:anmonteiro/bucklescript#9e6d8be74a7a4af66a921f4d505ae8e47716b4ec@d41d8cd9",
-        "@opam/merlin@opam:4.1-412@a9da5f4b"
+        "@opam/ocamlfind@opam:1.8.1@b7dc3072",
+        "@opam/merlin@opam:4.1-412@a9da5f4b",
+        "@opam/bucklescript@github:anmonteiro/bucklescript#396ea3669bb8c710be3331bfaf1be31d3dbefb7e@d41d8cd9"
       ],
       "devDependencies": [],
       "installConfig": { "pnp": false }
@@ -46,28 +47,6 @@
       "overrides": [],
       "dependencies": [],
       "devDependencies": []
-    },
-    "bs-platform@github:anmonteiro/bucklescript#9e6d8be74a7a4af66a921f4d505ae8e47716b4ec@d41d8cd9": {
-      "id":
-        "bs-platform@github:anmonteiro/bucklescript#9e6d8be74a7a4af66a921f4d505ae8e47716b4ec@d41d8cd9",
-      "name": "bs-platform",
-      "version":
-        "github:anmonteiro/bucklescript#9e6d8be74a7a4af66a921f4d505ae8e47716b4ec",
-      "source": {
-        "type": "install",
-        "source": [
-          "github:anmonteiro/bucklescript#9e6d8be74a7a4af66a921f4d505ae8e47716b4ec"
-        ]
-      },
-      "overrides": [],
-      "dependencies": [
-        "ocaml@github:anmonteiro/ocaml#72babec0e1796ce322464afc8ef2a0d7125d60cb@d41d8cd9",
-        "@opam/ocamlfind@opam:1.8.1@b7dc3072",
-        "@opam/dune-action-plugin@opam:2.8.4@ecd1dcb3",
-        "@opam/dune@opam:2.8.4@ee414d6c", "@esy-ocaml/reason@3.7.0@d41d8cd9"
-      ],
-      "devDependencies": [],
-      "installConfig": { "pnp": false }
     },
     "@opam/yojson@opam:1.7.0@7056d985": {
       "id": "@opam/yojson@opam:1.7.0@7056d985",
@@ -595,6 +574,28 @@
         "@esy-ocaml/substs@0.0.1@d41d8cd9"
       ],
       "devDependencies": []
+    },
+    "@opam/bucklescript@github:anmonteiro/bucklescript#396ea3669bb8c710be3331bfaf1be31d3dbefb7e@d41d8cd9": {
+      "id":
+        "@opam/bucklescript@github:anmonteiro/bucklescript#396ea3669bb8c710be3331bfaf1be31d3dbefb7e@d41d8cd9",
+      "name": "@opam/bucklescript",
+      "version":
+        "github:anmonteiro/bucklescript#396ea3669bb8c710be3331bfaf1be31d3dbefb7e",
+      "source": {
+        "type": "install",
+        "source": [
+          "github:anmonteiro/bucklescript#396ea3669bb8c710be3331bfaf1be31d3dbefb7e"
+        ]
+      },
+      "overrides": [],
+      "dependencies": [
+        "ocaml@github:anmonteiro/ocaml#72babec0e1796ce322464afc8ef2a0d7125d60cb@d41d8cd9",
+        "@opam/ocamlfind@opam:1.8.1@b7dc3072",
+        "@opam/dune-action-plugin@opam:2.8.4@ecd1dcb3",
+        "@opam/dune@opam:2.8.4@ee414d6c", "@esy-ocaml/reason@3.7.0@d41d8cd9"
+      ],
+      "devDependencies": [],
+      "installConfig": { "pnp": false }
     },
     "@opam/biniou@opam:1.2.1@d7570399": {
       "id": "@opam/biniou@opam:1.2.1@d7570399",

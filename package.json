@@ -12,7 +12,8 @@
     "clean": "bsb -clean-world",
     "build": "bsb -make-world",
     "watch": "bsb -make-world -w",
-    "test": "mocha"
+    "test": "mocha",
+    "postinstall": "esy"
   },
   "keywords": [
     "BuckleScript",
@@ -35,6 +36,7 @@
     "mocha": "^8.3.1"
   },
   "dependencies": {
+    "esy": "*",
     "fast-check": "^2.13.0"
   }
 }

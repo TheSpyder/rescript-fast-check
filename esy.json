@@ -1,18 +1,15 @@
 {
   "dependencies": {
-    "bs-platform": "*",
+    "@opam/bucklescript": "*",
+    "@opam/ocamlfind": "1.8.1",
     "@opam/merlin": "*"
   },
   "resolutions": {
-    "bs-platform": "anmonteiro/bucklescript#9e6d8be74a7a4af66a921f4d505ae8e47716b4ec",
+    "@opam/bucklescript": "anmonteiro/bucklescript#396ea3669bb8c710be3331bfaf1be31d3dbefb7e",
     "ocaml": "anmonteiro/ocaml#72babec0e1796ce322464afc8ef2a0d7125d60cb"
   },
   "esy": {
-    "buildsInSource": "unsafe",
-    "build": [
-      "ln -sfn #{bs-platform.install} node_modules/bs-platform",
-      "bsb -clean-world -make-world"
-    ]
+    "buildsInSource": "unsafe"
   },
   "installConfig": {
     "pnp": false
