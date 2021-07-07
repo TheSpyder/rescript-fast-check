@@ -209,14 +209,13 @@ describe("complex built-in arbitraries", () => {
       s => {
         open Js.Promise;
         let result = ref(0);
-        Arbitrary.Scheduler.schedule(
-          s,
-          resolve() |> then_(() => resolve(result := result.contents + 1)),
+        s->Arbitrary.Scheduler.schedule(
+          resolve() |> then_(() => resolve(result->incr)),
         )
-        |> ignore;
+        ->ignore;
 
         Arbitrary.Scheduler.waitAll(s, ())
-        |> then_(() => resolve(result.contents == 1));
+        |> then_(() => resolve(result^ == 1));
       },
     )
   });
