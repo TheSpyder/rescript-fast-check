@@ -1,6 +1,6 @@
 {
   "name": "rescript-fast-check",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Fast-check bindings for ReScript",
   "repository": {
     "type": "git",
@@ -12,7 +12,7 @@
     "clean": "bsb -clean-world",
     "build": "bsb -make-world",
     "watch": "bsb -make-world -w",
-    "test": "mocha"
+    "test": "bsb && mocha"
   },
   "keywords": [
     "BuckleScript",
