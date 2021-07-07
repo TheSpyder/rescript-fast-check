@@ -202,4 +202,22 @@ describe("complex built-in arbitraries", () => {
     let tree = Js.Dict.get(recursive, "tree")->Belt.Option.getExn;
     FcAssert.sync(property1(tree, constTrue));
   });
+
+  BsMocha.Promise.it("scheduler", () => {
+    Property.Async.assertProperty1(
+      Arbitrary.Scheduler.scheduler(),
+      s => {
+        open Js.Promise;
+        let result = ref(0);
+        Arbitrary.Scheduler.schedule(
+          s,
+          resolve() |> then_(() => resolve(result := result.contents + 1)),
+        )
+        |> ignore;
+
+        Arbitrary.Scheduler.waitAll(s, ())
+        |> then_(() => resolve(result.contents == 1));
+      },
+    )
+  });
 });

@@ -272,5 +272,5 @@ module Scheduler = {
     "scheduleSequence";
 
   // generated docs include (~constraints: schedulerConstraints=?) but documentation doesn't
-  [@module "fast-check"] external scheduler: unit => arbitrary(schedulerInstance) = "jsonObject";
+  [@module "fast-check"] external scheduler: unit => arbitrary(schedulerInstance) = "scheduler";
 };
