@@ -2,6 +2,8 @@
 
 [fast-check](https://github.com/dubzzz/fast-check) bindings for ReScript
 
+[![npm](https://img.shields.io/npm/v/rescript-fast-check.svg)](https://npmjs.org/rescript-fast-check)
+
 ## Installation
 
 ```
