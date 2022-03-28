@@ -44,14 +44,41 @@ module Combinators = {
   @module("fast-check") external array: arbitrary<'a> => arbitrary<array<'a>> = "array"
   @module("fast-check")
   external arrayWithLength: (arbitrary<'a>, int, int) => arbitrary<array<'a>> = "array"
-  @module("fast-check") external set: arbitrary<'a> => arbitrary<array<'a>> = "set"
-  @module("fast-check")
+
+  @deprecated("use uniqueArray instead") @module("fast-check")
+  external set: arbitrary<'a> => arbitrary<array<'a>> = "set"
+  @deprecated("use uniqueArrayWithOptions instead") @module("fast-check")
   external setWithLength: (
     arbitrary<'a>,
     int,
     int,
     ~comparator: ('a, 'a) => bool,
   ) => arbitrary<array<'a>> = "set"
+
+  type uniqueArrayOptions
+  @obj
+  external uniqueArrayOptions: (
+    ~minLength: float=?,
+    ~maxLength: float=?,
+    ~selector: 'a => 'a=?,
+    ~comparator: [#SameValue | #SameValueZero | #IsStrictlyEqual]=?,
+    ~size: string=?,
+    unit
+  ) => uniqueArrayOptions = ""
+  @obj
+  external uniqueArrayOptionsWithMethodComparator: (
+    ~minLength: float=?,
+    ~maxLength: float=?,
+    ~selector: 'a => 'a=?,
+    ~comparator: ('a, 'a) => bool=?,
+    ~size: string=?,
+    unit
+  ) => uniqueArrayOptions = ""
+  @module("fast-check")
+  external uniqueArray: arbitrary<'a> => arbitrary<array<'a>> = "uniqueArray"
+  @module("fast-check")
+  external uniqueArrayWithOptions: (arbitrary<'a>, uniqueArrayOptions) => arbitrary<array<'a>> =
+    "uniqueArray"
 
   // slightly tweaked because tuples are arrays in ReasonML
   // fast-check is not limited to 5,
