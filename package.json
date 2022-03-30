@@ -30,11 +30,10 @@
   "author": "Andrew Herron",
   "license": "BSD-3-Clause",
   "devDependencies": {
-    "bs-mocha": "^1.0.0",
-    "mocha": "^9.0.1"
+    "rescript": "^9.1.4",
+    "rescript-mocha": "^0.9.0"
   },
   "dependencies": {
-    "fast-check": "^2.17.0",
-    "rescript": "^9.1.4"
+    "fast-check": "^2.17.0"
   }
 }

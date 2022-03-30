@@ -1,4 +1,4 @@
-open BsMocha.Mocha
+open RescriptMocha.Mocha
 open Arbitrary
 open Property.Sync
 module FcAssert = Property.FcAssert
@@ -102,6 +102,9 @@ describe("combinators", () => {
     FcAssert.sync(property1(uniqueArray(hexa()), eq))
     FcAssert.sync(property1(uniqueArrayWithOptions(hexa(), uniqueArrayOptions(~minLength=5., ~maxLength=10., ~comparator=#SameValue, ())), eq))
     FcAssert.sync(property1(uniqueArrayWithOptions(hexa(), uniqueArrayOptionsWithMethodComparator(~minLength=5., ~maxLength=10., ~comparator=\"==", ())), eq))
+    FcAssert.sync(property1(uniqueArrayWithOptions(hexa(), uniqueArrayOptions(~size=#"+4", ())), eq))
+    FcAssert.sync(property1(uniqueArrayWithOptions(hexa(), uniqueArrayOptions(~maxLength=50., ~size=#max, ())), eq))
+    FcAssert.sync(property1(uniqueArrayWithOptions(hexa(), uniqueArrayOptions(~size=#xsmall, ())), eq))
     FcAssert.sync(property1(tuple2(hexa(), hexa()), eq))
     FcAssert.sync(property1(tuple3(hexa(), hexa(), hexa()), eq))
     FcAssert.sync(property1(tuple4(hexa(), hexa(), hexa(), hexa()), eq))
@@ -200,7 +203,7 @@ describe("complex built-in arbitraries", () => {
     FcAssert.sync(property1(tree, constTrue))
   })
 
-  BsMocha.Promise.it("scheduler", () =>
+  RescriptMocha.Promise.it("scheduler", () =>
     Property.Async.assertProperty1(Arbitrary.Scheduler.scheduler(), s => {
       open Js.Promise
       let result = ref(0)

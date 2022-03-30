@@ -5,7 +5,7 @@
   (at least as many as we're able to given it hasn't all been replicated in these bindings)
  */
 
-open BsMocha.Mocha
+open RescriptMocha.Mocha
 open Arbitrary
 open Property.Sync
 open Combinators

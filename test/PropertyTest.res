@@ -1,4 +1,4 @@
-open BsMocha.Mocha
+open RescriptMocha.Mocha
 open Arbitrary
 open Property
 
@@ -192,7 +192,7 @@ describe("syncUnit property checks", () => {
   )
 })
 
-open! BsMocha.Promise
+open! RescriptMocha.Promise
 describe("async property checks", () => {
   let eq = i => Js.Promise.resolve(i === i)
   let eq2 = (i, j) => Js.Promise.resolve(i === i && j === j)

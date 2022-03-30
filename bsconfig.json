@@ -17,7 +17,7 @@
   ],
   "suffix": ".bs.js",
   "bs-dev-dependencies": [
-    "bs-mocha"
+    "rescript-mocha"
   ],
   "package-specs": [
     {

@@ -7,6 +7,27 @@ type sum<'a>
 
 type arbitrary<'a>
 
+@ocaml.doc(
+  "see https://github.com/dubzzz/fast-check/blob/main/documentation/Arbitraries.md#size-explained"
+)
+type arbitrarySize = [
+  | #"-4"
+  | #"-3"
+  | #"-2"
+  | #"-1"
+  | #"="
+  | #"+1"
+  | #"+2"
+  | #"+3"
+  | #"+4"
+  | #xsmall
+  | #small
+  | #medium
+  | #large
+  | #xlarge
+  | #max
+]
+
 // Advanced arbitraries, methods on the arbitrary instances to derive new arbitraries
 module Derive = {
   @send external chain: (arbitrary<'a>, 'a => arbitrary<'b>) => arbitrary<'b> = "chain"
@@ -62,8 +83,8 @@ module Combinators = {
     ~maxLength: float=?,
     ~selector: 'a => 'a=?,
     ~comparator: [#SameValue | #SameValueZero | #IsStrictlyEqual]=?,
-    ~size: string=?,
-    unit
+    ~size: arbitrarySize=?,
+    unit,
   ) => uniqueArrayOptions = ""
   @obj
   external uniqueArrayOptionsWithMethodComparator: (
@@ -71,8 +92,8 @@ module Combinators = {
     ~maxLength: float=?,
     ~selector: 'a => 'a=?,
     ~comparator: ('a, 'a) => bool=?,
-    ~size: string=?,
-    unit
+    ~size: arbitrarySize=?,
+    unit,
   ) => uniqueArrayOptions = ""
   @module("fast-check")
   external uniqueArray: arbitrary<'a> => arbitrary<array<'a>> = "uniqueArray"
