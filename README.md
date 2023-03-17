@@ -60,7 +60,7 @@ These bindings aim to be zero cost as much as possible. The library is almost ex
 
 Everything is under the `FastCheck` namespace. Rather than use a flat namespace, as the fast-check API does, ReScript affords us the ability to use some logical module groupings while still compiling to the flat namespace.
 
-The `rescript-fast-check` API groups are roughly mapped to the fast-check documentation, although not everything lines up as well as it used to after some of the fast-check documentation was restructured.
+The `rescript-fast-check` API groups are roughly mapped to the fast-check usage guide, not the API reference, although not everything lines up as well as it used to after some of the fast-check documentation was restructured.
 
 ### `FastCheck.Arbitrary`
 This module covers [built-in arbitraries](https://github.com/dubzzz/fast-check/blob/master/documentation/Arbitraries.md) and [custom arbitraries](https://github.com/dubzzz/fast-check/blob/master/documentation/AdvancedArbitraries.md). Top level functions are simple arbitraries that generate values with no (or very little) input, sub-modules are used to group more complicated arbitraries together.
